@@ -23,6 +23,7 @@ class DocWriter(QWidget):
         
         self.HEIGHT = 600
         self.WIDTH = 600 * 2
+        self.mark_num = 0
         self.logo_img_size = 80
         self.resize(self.WIDTH, self.HEIGHT)
 
@@ -37,6 +38,8 @@ class DocWriter(QWidget):
         self.excel_import_name = 'Import'
         self.excel_export_name = 'Export'
         self.log_init_comment = """This is Log View"""
+        self.makr_name = 'mark'
+        self.run_text = 'RUN'
 
         self.title_font = QFont()
         self.title_font.setPointSize(30)
@@ -53,7 +56,7 @@ class DocWriter(QWidget):
         self.setLayout(self.grid)
 
         self.guiHeader()
-        
+        self.guiControlPannel()
         self.guiLogView()
 
         self.show() # show GUI
@@ -85,26 +88,82 @@ class DocWriter(QWidget):
         return 
 
     def guiControlPannel(self):
+        self.groupbox = QGroupBox(self)
+        # vbox = QVBoxLayout()
+
+        # mark_box.addWidget(mark_box)
+        # vbox.setLayout(mark_box)
+        
+        self.grid.addWidget(self.groupbox, 3, 0, 6, 5)
+        self.mark_vbox = QVBoxLayout()
+
+        import_btn = QPushButton(self)
+        import_btn.setText(self.excel_import_name)
+        self.grid.addWidget(import_btn, 9, 0, 1, 1)
+
+        export_btn = QPushButton(self)
+        export_btn.setText(self.excel_export_name)
+        self.grid.addWidget(export_btn, 9, 1, 1, 1)
+
+        mark_plus_btn = QPushButton(self)
+        mark_plus_btn.setText('+')
+        mark_plus_btn.clicked.connect(self.generate_mark)
+        self.grid.addWidget(mark_plus_btn, 9, 2, 1, 1)
+
+        run_btn = QPushButton(self)
+        run_btn.setText(self.run_text)
+        self.grid.addWidget(run_btn, 9, 4, 1, 1)
+
+        
+        self.generate_mark()
+        
+        self.groupbox.setLayout(self.mark_vbox)
         return 
 
     def guiLogView(self):
         init_btn = QPushButton(self)
         init_btn.setText(self.reset_btn_name)
-        self.grid.addWidget(init_btn, 0, 10, 1, 1)
+        self.grid.addWidget(init_btn, 0, 9, 1, 1)
 
         log_view = QTextBrowser()
         log_view.append(self.log_init_comment)
         # self.tb.setAcceptRichText(True)
         # self.tb.setOpenExternalLinks(True)
-        self.grid.addWidget(log_view, 1, 6, 8, 5)
+        self.grid.addWidget(log_view, 1, 6, 8, 4)
 
         logo_img = QPixmap(self.logo_file).scaled(self.logo_img_size, self.logo_img_size)
         logo_img_box = QLabel()
         logo_img_box.setPixmap(logo_img)
-        self.grid.addWidget(logo_img_box, 9, 10, 1, 1)
+        self.grid.addWidget(logo_img_box, 9, 9, 1, 1)
 
         return 
 
+    def generate_mark(self):
+        self.mark_num += 1
+
+        mark_box = QHBoxLayout()
+        mark_line_num = QLineEdit(self)
+        mark_line_num.setText(f"{self.makr_name}{self.mark_num}")
+        # mark_line_num.setFixedWidth(80)
+        mark_line_name = QLineEdit(self)
+        # mark_line_num.setFixedWidth(200)
+        mark_line_name.setAlignment(Qt.AlignTop)
+        # mark_line_value = QTextEdit(self)
+        mark_line_value = QLineEdit(self)
+        mark_line_value.setFixedWidth(400)
+        # mark_line_value.setFixedHeight(40)
+
+        mark_box.addWidget(mark_line_num)
+        mark_box.addWidget(mark_line_name)
+        mark_box.addWidget(mark_line_value)
+
+        mark_box.setAlignment(Qt.AlignTop)
+        self.mark_vbox.setAlignment(Qt.AlignTop)
+        self.mark_vbox.addLayout(mark_box)
+        return 
+
+    def remove_mark(self):
+        return 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
