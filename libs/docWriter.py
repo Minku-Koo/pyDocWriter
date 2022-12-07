@@ -21,17 +21,17 @@ class Worker(QThread):
     def __init__(self, parents):
         super().__init__(parents)
         self.parents = parents
-        self.running = True
+        self.__running = True
 
     def run(self):
-        while self.running:
+        while self.__running:
             time.sleep(0.05)
             if self.parents.scroll_flag:
-                self.scroll()
+                self.__scroll()
             else:
                 self.stop()
 
-    def scroll(self):
+    def __scroll(self):
         self.parents.group_scroll_area.verticalScrollBar().setValue(
             self.parents.group_scroll_area.verticalScrollBar().maximum()
         )
@@ -39,7 +39,7 @@ class Worker(QThread):
         return 
 
     def stop(self):
-        self.running = False
+        self.__running = False
         self.quit()
         return 
 
@@ -54,11 +54,12 @@ class DocWriter(QWidget):
         self.logo_img_size = 80
         self.resize(self.WIDTH, self.HEIGHT)
 
-        self.title = "Doc Writer"
+        self.title = "Ms Office Merger"
         self.description = """Hi, This is Document Writer what you want"""
         self.logo_file = "logo.png"
         self.gui_background_color = "white"
         self.reset_btn_name = 'RESET'
+        self.help_btn_name = 'HELP'
         self.doc_load_name = "File Load"
         self.select_options_name = ('option1', 'option2')
         self.target_path_btn_name = 'Target'
@@ -86,35 +87,43 @@ class DocWriter(QWidget):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        self.guiHeader()
+        self.guiHeaderFileBox()
         self.guiControlPannel()
         self.guiLogView()
 
         self.show() # show GUI
         return 
 
-    def guiHeader(self):
+    def guiHeaderFileBox(self):
         title = QLabel(self.title, self)
         title.setFont(self.title_font)
+        title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet('border-style:solid;border-color:black;border-width:1px;')
-        self.grid.addWidget(title, 0, 2, 1, 2)
+        self.grid.addWidget(title, 0, 2, 1, 3)
         
-        simple_desc = QLabel(self.description, self)
-        simple_desc.setStyleSheet('border-style:solid;border-color:black;border-width:1px;')
-        self.grid.addWidget(simple_desc, 1, 0, 1, 5)
-
         doc_load_btn = QPushButton(self)
         doc_load_btn.setText(self.doc_load_name)
-        self.grid.addWidget(doc_load_btn, 2, 0, 1, 1)
+        self.grid.addWidget(doc_load_btn, 1, 0, 1, 1)
+
+
+        file_workspace = QLabel(self)
+        file_workspace.setStyleSheet('border-style:solid;border-color:black;border-width:1px;')
+        self.grid.addWidget(file_workspace, 2, 0, 2, 5)
 
         select_box = QComboBox(self)
         select_box.addItem(self.select_options_name[0])
         select_box.addItem(self.select_options_name[1])
-        self.grid.addWidget(select_box, 2, 3, 1, 1)
+        self.grid.addWidget(select_box, 4, 0, 1, 1)
 
         target_btn = QPushButton(self)
+        target_btn.setEnabled(False)
         target_btn.setText(self.target_path_btn_name)
-        self.grid.addWidget(target_btn, 2, 4, 1, 1)
+        self.grid.addWidget(target_btn, 4, 1, 1, 1)
+
+        target_path_bax = QLabel(self)
+        target_path_bax.setStyleSheet('border-style:solid;border-color:#c7c7c7;border-width:1px;')
+        target_path_bax.setText('')
+        self.grid.addWidget(target_path_bax, 4, 2, 1, 2)
 
         return 
 
@@ -123,25 +132,25 @@ class DocWriter(QWidget):
         self.group_scroll_area = QScrollArea(self)
         self.group_scroll_area.setWidgetResizable(True)
         
-        self.grid.addWidget(self.group_scroll_area, 3, 0, 5, 5)
+        self.grid.addWidget(self.group_scroll_area, 5, 0, 4, 5)
         self.mark_vbox = QVBoxLayout()
 
         import_btn = QPushButton(self)
         import_btn.setText(self.excel_import_name)
-        self.grid.addWidget(import_btn, 8, 0, 1, 1)
+        self.grid.addWidget(import_btn, 9, 0, 1, 1)
 
         export_btn = QPushButton(self)
         export_btn.setText(self.excel_export_name)
-        self.grid.addWidget(export_btn, 8, 1, 1, 1)
+        self.grid.addWidget(export_btn, 9, 1, 1, 1)
 
         mark_plus_btn = QPushButton(self)
         mark_plus_btn.setText('+')
         mark_plus_btn.clicked.connect(self.generate_mark)
-        self.grid.addWidget(mark_plus_btn, 8, 4, 1, 1)
+        self.grid.addWidget(mark_plus_btn, 9, 4, 1, 1)
 
         run_btn = QPushButton(self)
         run_btn.setText(self.run_text)
-        self.grid.addWidget(run_btn, 9, 1, 1, 3)
+        self.grid.addWidget(run_btn, 10, 1, 1, 3)
 
         self.groupbox.setLayout(self.mark_vbox)
         self.group_scroll_area.setWidget(self.groupbox)
@@ -150,20 +159,24 @@ class DocWriter(QWidget):
         return 
 
     def guiLogView(self):
+        help_btn = QPushButton(self)
+        help_btn.setText(self.help_btn_name)
+        self.grid.addWidget(help_btn, 1, 8, 1, 1)
+
         init_btn = QPushButton(self)
         init_btn.setText(self.reset_btn_name)
-        self.grid.addWidget(init_btn, 0, 9, 1, 1)
+        self.grid.addWidget(init_btn, 1, 9, 1, 1)
 
         log_view = QTextBrowser()
         log_view.append(self.log_init_comment)
         # self.tb.setAcceptRichText(True)
         # self.tb.setOpenExternalLinks(True)
-        self.grid.addWidget(log_view, 1, 6, 7, 4)
+        self.grid.addWidget(log_view, 2, 7, 7, 3)
 
         logo_img = QPixmap(self.logo_file).scaled(self.logo_img_size, self.logo_img_size)
         logo_img_box = QLabel()
         logo_img_box.setPixmap(logo_img)
-        self.grid.addWidget(logo_img_box, 9, 9, 1, 1)
+        self.grid.addWidget(logo_img_box, 10, 9, 1, 1)
 
         return 
 
@@ -191,7 +204,7 @@ class DocWriter(QWidget):
         mark_box = QHBoxLayout()
 
         mark_line_num = QLineEdit(self)
-        mark_line_num.setText(f"{self.mark_num}")
+        mark_line_num.setText(f"mark{self.mark_num}")
         mark_line_name = QLineEdit(self)
         mark_line_value = QTextEdit(self)
         mark_line_value.setFixedWidth(380)
