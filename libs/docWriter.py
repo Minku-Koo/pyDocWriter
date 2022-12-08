@@ -13,7 +13,7 @@ import time
 import webbrowser
 import datetime 
 from PyQt5 import uic
-
+from utils import msAuto
 
 class Worker(QThread):
     def __init__(self, parents):
@@ -87,6 +87,9 @@ class DocWriter(QWidget):
         self.no_border = 'border-width:0px;'
 
         self.scroll_flag = True
+
+        self.amc = msAuto.AutoMarkerChanger()
+        self.excel_export_filename = '/Output_MsOfficeMerger.xlsx'
 
         self.title_font = QFont()
         self.title_font.setPointSize(30)
@@ -165,10 +168,12 @@ class DocWriter(QWidget):
 
         import_btn = QPushButton(self)
         import_btn.setText(self.excel_import_name)
+        import_btn.clicked.connect(self.mark_import_excel)
         self.grid.addWidget(import_btn, 9, 0, 1, 1)
 
         export_btn = QPushButton(self)
         export_btn.setText(self.excel_export_name)
+        export_btn.clicked.connect(self.mark_export_excel)
         self.grid.addWidget(export_btn, 9, 1, 1, 1)
 
         mark_plus_btn = QPushButton(self)
@@ -324,10 +329,32 @@ class DocWriter(QWidget):
         self.log_view.append(text)
         return 
 
+    def mark_export_excel(self):
+        export_path = QFileDialog.getExistingDirectory(self, 'Select Directory', './')
+        export_path += self.excel_export_filename
+        export_path = export_path.replace("/", "\\")
+        export_dict = {}
+        for mark_number in range(1, self.mark_num + 1):
+            lb_name_text = self.mark_obj_dict[mark_number][1].text()
+            lb_value_text = self.mark_obj_dict[mark_number][2].toPlainText()
+            export_dict[mark_number] = (lb_name_text, lb_value_text)
+        self.amc.export_mark(export_dict, export_path)
+        return 
+
+    def mark_import_excel(self):
+        imported_file = QFileDialog.getOpenFileNames(self, 'Select Directory', './')[0]
+        print(imported_file)
+        imported_file = imported_file[0].replace("/", "\\")
+        print(imported_file)
+        mark_dict = self.amc.import_mark(imported_file)
+        print(mark_dict)
+        return 
+
     def __run(self):
         for mark_number in range(1, self.mark_num + 1):
             lb_name = self.mark_obj_dict[mark_number][1]
             lb_value = self.mark_obj_dict[mark_number][2]
+            print(lb_name.text(), lb_value.toPlainText())
         self.add_log(self.run_done)
         return 
 
