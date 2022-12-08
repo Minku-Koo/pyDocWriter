@@ -51,10 +51,12 @@ class DocWriter(QWidget):
         self.mark_num = 0
         self.logo_img_size = 80
         self.mark_input_height = 40
+        self.run_btn_height = 60
         self.resize(self.WIDTH, self.HEIGHT)
 
         self.title = "Ms Office Merger"
         self.description = """Hi, This is Document Writer what you want"""
+        self.img_path = "./img/"
         self.logo_file = "logo.png"
         self.gui_background_color = "white"
         self.reset_btn_name = 'RESET'
@@ -68,9 +70,11 @@ class DocWriter(QWidget):
         self.log_comment = """This is Log View"""
         self.file_loaded_log = '''MS file uploaded!'''
         self.run_done = '''Work Done!'''
-        self.run_text = 'RUN'
+        self.run_text = '실  행'
+        self.mark_rem_btn_text = '삭 제'
+        self.mark_add_btn_text = '추 가'
         
-        self.ms_loaded_file_list = []
+        # self.ms_loaded_file_list = []
         self.ms_loaded_file_index = 0
         self.ms_loaded_file_label = {}  # filename : (rem_btn_label, fileLabel)
 
@@ -99,7 +103,7 @@ class DocWriter(QWidget):
 
     def initGUI(self): # main user interface 
         self.setWindowTitle(self.title) #GUI Title
-        self.setWindowIcon(QIcon(self.logo_file)) #set Icon File, 16x16, PNG file
+        self.setWindowIcon(QIcon(self.img_path + self.logo_file)) #set Icon File, 16x16, PNG file
         self.setStyleSheet(f"background-color:{self.gui_background_color};") #배경색 설정
 
         self.grid = QGridLayout()
@@ -138,23 +142,12 @@ class DocWriter(QWidget):
         self.file_workspace.setLayout(self.file_vbox)
         self.file_scroll_area.setWidget(self.file_workspace)
 
-        self.select_box = QComboBox(self)
-        self.select_box.addItem(self.select_options_name[0])
-        self.select_box.addItem(self.select_options_name[1])
-        self.select_box.currentIndexChanged.connect(self.change_combo)
+        # self.select_box = QComboBox(self)
+        # self.select_box.addItem(self.select_options_name[0])
+        # self.select_box.addItem(self.select_options_name[1])
+        # self.select_box.currentIndexChanged.connect(self.change_combo)
         
-        self.grid.addWidget(self.select_box, 4, 0, 1, 1)
-
-        self.target_btn = QPushButton(self)
-        self.target_btn.setEnabled(True)
-        self.target_btn.setText(self.target_path_btn_name)
-        self.target_btn.clicked.connect(self.set_output_target_path)
-        self.grid.addWidget(self.target_btn, 4, 1, 1, 1)
-
-        self.target_path_box = QLabel(self)
-        self.target_path_box.setStyleSheet(self.target_active_style)
-        self.target_path_box.setText('')
-        self.grid.addWidget(self.target_path_box, 4, 2, 1, 2)
+        # self.grid.addWidget(self.select_box, 4, 0, 1, 1)
 
         return 
 
@@ -163,7 +156,7 @@ class DocWriter(QWidget):
         self.group_scroll_area = QScrollArea(self)
         self.group_scroll_area.setWidgetResizable(True)
         
-        self.grid.addWidget(self.group_scroll_area, 5, 0, 4, 5)
+        self.grid.addWidget(self.group_scroll_area, 4, 0, 5, 5)
         self.mark_vbox = QVBoxLayout()
 
         import_btn = QPushButton(self)
@@ -176,20 +169,33 @@ class DocWriter(QWidget):
         export_btn.clicked.connect(self.mark_export_excel)
         self.grid.addWidget(export_btn, 9, 1, 1, 1)
 
+        mark_rem_btn = QPushButton(self)
+        mark_rem_btn.setText(self.mark_rem_btn_text)
+        mark_rem_btn.clicked.connect(self.remove_mark)
+        self.grid.addWidget(mark_rem_btn, 9, 3, 1, 1)
+
         mark_plus_btn = QPushButton(self)
-        mark_plus_btn.setText('+')
+        mark_plus_btn.setText(self.mark_add_btn_text)
         mark_plus_btn.clicked.connect(self.generate_mark)
         self.grid.addWidget(mark_plus_btn, 9, 4, 1, 1)
 
-        run_btn = QPushButton(self)
-        run_btn.setText(self.run_text)
-        run_btn.clicked.connect(self.__run)
-        self.grid.addWidget(run_btn, 10, 1, 1, 3)
+        self.target_btn = QPushButton(self)
+        self.target_btn.setEnabled(True)
+        self.target_btn.setText(self.target_path_btn_name)
+        self.target_btn.clicked.connect(self.set_output_target_path)
+        self.grid.addWidget(self.target_btn, 10, 0, 1, 1)
 
+        self.target_path_box = QLabel(self)
+        self.target_path_box.setStyleSheet(self.target_active_style)
+        self.target_path_box.setText('')
+        self.target_path_box.setFixedHeight(25)
+        self.grid.addWidget(self.target_path_box, 10, 1, 1, 4)
+
+        
         self.groupbox.setLayout(self.mark_vbox)
         self.group_scroll_area.setWidget(self.groupbox)
 
-        self.generate_mark()
+        # self.generate_mark()
         return 
 
     def guiLogView(self):
@@ -200,6 +206,7 @@ class DocWriter(QWidget):
 
         init_btn = QPushButton(self)
         init_btn.setText(self.reset_btn_name)
+        init_btn.clicked.connect(self.__reset)
         self.grid.addWidget(init_btn, 1, 9, 1, 1)
 
         self.log_view = QTextBrowser(self)
@@ -208,20 +215,27 @@ class DocWriter(QWidget):
         # self.tb.setOpenExternalLinks(True)
         self.grid.addWidget(self.log_view, 2, 7, 7, 3)
 
-        logo_img = QPixmap(self.logo_file).scaled(self.logo_img_size, self.logo_img_size)
+        run_btn = QPushButton(self)
+        run_btn.setText(self.run_text)
+        run_btn.clicked.connect(self.__run)
+        run_btn.setFixedHeight(self.run_btn_height)
+        self.grid.addWidget(run_btn, 9, 7, 2, 2)
+
+        logo_img = QPixmap(self.img_path + self.logo_file).scaled(self.logo_img_size, self.logo_img_size)
         logo_img_box = QLabel()
         logo_img_box.resize(self.logo_img_size, self.logo_img_size)
         logo_img_box.setPixmap(logo_img)
         # logo_img_box.setText(f'''<a href="{self.our_logo_link_url}"><img src="{self.logo_file}"
         #                     width={self.logo_img_size} height={self.logo_img_size}></a>''')
-        self.grid.addWidget(logo_img_box, 10, 9, 1, 1)
+        self.grid.addWidget(logo_img_box, 10, 9, 1, 1, alignment=Qt.AlignRight)
+
 
         return 
 
     # + click event
     def generate_mark(self):
         self.mark_num += 1
-        self.create_mark(self.mark_num)
+        self.create_mark()
 
         self.scroll_flag = True
         self.worker = Worker(self)
@@ -229,52 +243,45 @@ class DocWriter(QWidget):
 
         return 
 
-    def create_mark(self, mark_index):
-        mark_box = QHBoxLayout()
+    def create_mark(self):
+        self.mark_box = QHBoxLayout()
 
-        mark_line_num = QLineEdit(self)
-        mark_line_num.setText(f"mark{mark_index}")
+        mark_line_num = QPushButton(self)
+        mark_line_num.setText(f"mark{self.mark_num}")
+        mark_line_num.setEnabled(False)
         mark_line_num.setFixedHeight(self.mark_input_height)
+        mark_line_num.setFixedWidth(100)
         mark_line_name = QLineEdit(self)
+        mark_line_name.setFixedWidth(160)
         mark_line_name.setFixedHeight(self.mark_input_height)
-        mark_line_value = QTextEdit(self)
-        mark_line_value.setFixedWidth(380)
+        mark_line_value = QPlainTextEdit(self)
+        # mark_line_value = QLineEdit(self)
         mark_line_value.setFixedHeight(self.mark_input_height)
-        rem_btn = QPushButton(self)
-        rem_btn.setText('X')
-        rem_btn.clicked.connect(lambda: self.remove_mark(mark_index))
-        rem_btn.setFixedWidth(30)
-        rem_btn.setFixedHeight(30)
 
-        mark_box.addWidget(mark_line_num)
-        mark_box.addWidget(mark_line_name)
-        mark_box.addWidget(mark_line_value)
-        mark_box.addWidget(rem_btn)
+        self.mark_box.addWidget(mark_line_num)
+        self.mark_box.addWidget(mark_line_name)
+        self.mark_box.addWidget(mark_line_value)
 
-        self.mark_vbox.addLayout(mark_box)
-        self.mark_vbox.setAlignment(Qt.AlignTop)
+        # self.mark_box.setAlignment(Qt.AlignTop)
+        self.mark_vbox.addLayout(self.mark_box)
+        # self.mark_vbox.setAlignment(Qt.AlignTop)
 
-        self.mark_obj_dict[self.mark_num] = (
-                                            mark_line_num,
+        self.mark_obj_dict[self.mark_num] = (mark_line_num,
                                             mark_line_name,
-                                            mark_line_value,
-                                            rem_btn)
+                                            mark_line_value)
         return 
 
-    def remove_mark(self, mark_index):
-        print(mark_index)
-        return 
-
-    def change_combo(self):
-        combo_idx = self.select_box.currentIndex()
-        if combo_idx == 1:
-            self.target_btn.setEnabled(False)
-            self.target_path_box.setStyleSheet(self.target_unactive_style)
-            self.target_path_box.setText('')
-        else:
-            self.target_btn.setEnabled(True)
-            self.target_path_box.setStyleSheet(self.target_active_style)
-            self.target_path_box.setText('')
+    def remove_mark(self):
+        if self.mark_num == 0:
+            return 
+        
+        self.mark_vbox.removeWidget(self.mark_obj_dict[self.mark_num][0])
+        self.mark_vbox.removeWidget(self.mark_obj_dict[self.mark_num][1])
+        self.mark_vbox.removeWidget(self.mark_obj_dict[self.mark_num][2])
+        
+        del  self.mark_obj_dict[self.mark_num]
+        self.mark_num -= 1
+        self.mark_vbox.setAlignment(Qt.AlignTop)
         return 
 
     def load_file_list(self):
@@ -303,8 +310,6 @@ class DocWriter(QWidget):
         self.file_vbox.addLayout(file_group_box)
         self.file_vbox.setAlignment(Qt.AlignTop)
 
-        self.ms_loaded_file_list.append(filename)
-        self.ms_loaded_file_index += 1
         self.ms_loaded_file_label[filename] = (rem_btn, file_label)
         return 
 
@@ -313,7 +318,7 @@ class DocWriter(QWidget):
         self.file_vbox.removeWidget(self.ms_loaded_file_label[filename][1])
 
         del self.ms_loaded_file_label[filename]
-        self.ms_loaded_file_list.remove(filename)
+        
         return 
 
     def set_output_target_path(self):
@@ -331,6 +336,8 @@ class DocWriter(QWidget):
 
     def mark_export_excel(self):
         export_path = QFileDialog.getExistingDirectory(self, 'Select Directory', './')
+        if not export_path:
+            return 
         export_path += self.excel_export_filename
         export_path = export_path.replace("/", "\\")
         export_dict = {}
@@ -343,17 +350,42 @@ class DocWriter(QWidget):
 
     def mark_import_excel(self):
         imported_file = QFileDialog.getOpenFileNames(self, 'Select Directory', './')[0]
-        print(imported_file)
+        if not imported_file:
+            return 
         imported_file = imported_file[0].replace("/", "\\")
-        print(imported_file)
         mark_dict = self.amc.import_mark(imported_file)
         print(mark_dict)
         return 
 
+    def __reset(self):
+        self.log_view.setText(self.log_comment)
+        
+        for w in self.groupbox.findChildren(QPushButton):
+            w.deleteLater()
+        for w in self.groupbox.findChildren(QLineEdit):
+            w.deleteLater()
+        for w in self.groupbox.findChildren(QPlainTextEdit):
+            w.deleteLater()
+        for w in self.file_workspace.findChildren(QLabel):
+            w.deleteLater()
+        for w in self.file_workspace.findChildren(QPushButton):
+            w.deleteLater()
+
+        self.mark_num = 0
+        self.ms_loaded_file_label = {}
+        self.ms_loaded_file_index = 0
+        self.mark_obj_dict = {} 
+        self.output_target_path = './'
+        self.target_path_box.setText('')
+        return 
+
     def __run(self):
+        if self.mark_num == 0:
+            return 
         for mark_number in range(1, self.mark_num + 1):
             lb_name = self.mark_obj_dict[mark_number][1]
             lb_value = self.mark_obj_dict[mark_number][2]
+            print(lb_name.text(), lb_value.text())
             print(lb_name.text(), lb_value.toPlainText())
         self.add_log(self.run_done)
         return 
