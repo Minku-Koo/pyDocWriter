@@ -35,11 +35,66 @@ class Worker(QThread):
         )
         self.parents.scroll_flag = False
         return 
-
+    
     def stop(self):
         self.__running = False
         self.quit()
         return 
+
+
+class ShowWe(QThread):
+    def __init__(self, parents):
+        super().__init__(parents)
+        self.parents = parents
+        self.__running = True
+        self.num = 0
+        self.our_init_logo_view = '''
+■■■■■■    ■■■■■■    ■■■■■■    ■■■■■■
+■■■■■■    ■■■■■■    ■■■■■■    ■■■■■■
+■          ■    ■                 ■                ■          ■
+■          ■    ■                 ■                ■          ■
+■          ■    ■                 ■                ■          ■
+■          ■    ■                 ■                ■          ■
+■          ■    ■                 ■                ■          ■
+■          ■    ■                 ■                ■          ■
+■          ■    ■                 ■                ■          ■
+■          ■    ■                 ■                ■          ■
+■          ■    ■                 ■                ■          ■
+■■■■■■    ■■■■■■    ■■■■■■    ■          ■
+■■■■■■    ■■■■■■    ■■■■■■    ■          ■
+          ■■              ■■              ■■    ■          ■
+          ■■              ■■              ■■    ■          ■
+          ■■              ■■              ■■    ■          ■
+          ■■              ■■              ■■    ■          ■
+          ■■              ■■              ■■    ■          ■
+          ■■              ■■              ■■    ■          ■
+          ■■              ■■              ■■    ■          ■
+■■■■■■    ■■■■■■    ■■■■■■    ■■■■■■ 
+■■■■■■    ■■■■■■    ■■■■■■    ■■■■■■ 
+'''
+        self.show_log = self.our_init_logo_view.split("\n")
+        
+    def run(self):
+        while self.__running:
+            if self.parents.init_run_flog:
+                time.sleep(0.08)
+                self.__show()
+            else:
+                self.stop()
+
+    def __show(self):
+        self.parents.add_log(self.show_log[self.num])
+        self.num += 1
+        if len(self.show_log) == self.num:
+            self.parents.init_run_flog = False
+        return 
+
+    def stop(self):
+        self.__running = False
+        self.parents.start_logo_view_over = True
+        self.quit()
+        return 
+
 
 
 class DocWriter(QWidget):
@@ -57,7 +112,6 @@ class DocWriter(QWidget):
         self.resize(self.WIDTH, self.HEIGHT)
 
         self.title = "MS OFFICE MERGER (MOM)"
-        self.description = """Hi, This is Document Writer what you want"""
         self.font_path = "./font/"
         self.title_font_name = "Samsung Sharp Sans Bold"
         self.samsung_one_font = "SamsungOne 400"
@@ -73,8 +127,6 @@ class DocWriter(QWidget):
         self.excel_import_name = 'Import'
         self.excel_export_name = 'Export'
 
-        self.log_comment = """This is Log View"""
-        self.file_loaded_log = '''MS file uploaded!'''
         self.run_done = '''Work Done!'''
         self.run_text = '실 행'
         self.mark_rem_btn_text = '삭 제'
@@ -97,6 +149,8 @@ class DocWriter(QWidget):
         self.no_border = 'border-width:0px;'
 
         self.scroll_flag = True
+        self.init_run_flog = True
+        self.start_logo_view_over = False
 
         self.amc = msAuto.AutoMarkerChanger()
         self.excel_export_filename = '/Output_MsOfficeMerger.xlsx'
@@ -106,8 +160,22 @@ class DocWriter(QWidget):
         
         # self.title_font_name
 
+        ##################################################
+        ############# Log ################################
+        self.log_comment = """Log View"""
+        self.file_loaded_log = '''파일 업로드 완료'''
+        self.mark_value_not_enough = '''모든 칸을 채워주세요'''
+        self.no_mark_input = '''하나 이상의 mark가 입력되어야 합니다'''
+        self.target_not_exist = '''결과 저장 폴더를 지정해주세요'''
+        self.import_success = '''엑셀 파일에서 데이터 불러오기 성공'''
+        self.export_success = '''데이터 엑셀로 내보내기 성공'''
+
+        
+
 
         self.initGUI()
+
+        self.__wonderful()
         return 
 
     def initGUI(self): # main user interface 
@@ -219,9 +287,6 @@ class DocWriter(QWidget):
         self.grid.addWidget(init_btn, 1, 9, 1, 1)
 
         self.log_view = QTextBrowser(self)
-        self.log_view.append(self.log_comment)
-        # self.tb.setAcceptRichText(True)
-        # self.tb.setOpenExternalLinks(True)
         self.grid.addWidget(self.log_view, 2, 7, 7, 3)
 
         run_btn = QPushButton(self)
@@ -232,10 +297,7 @@ class DocWriter(QWidget):
 
         logo_img = QPixmap(self.img_path + self.logo_file).scaled(self.logo_img_size, self.logo_img_size)
         logo_img_box = QLabel()
-        # logo_img_box.resize(self.logo_img_size, self.logo_img_size)
         logo_img_box.setPixmap(logo_img)
-        # logo_img_box.setText(f'''<a href="{self.our_logo_link_url}"><img src="{self.logo_file}"
-        #                     width={self.logo_img_size} height={self.logo_img_size}></a>''')
         self.grid.addWidget(logo_img_box, 10, 9, 1, 1, alignment=Qt.AlignRight)
 
 
@@ -252,20 +314,29 @@ class DocWriter(QWidget):
 
         return 
 
-    def create_mark(self):
+    def create_mark(self, mark_num = 0, mark_name = '', mark_val = ''):
         self.mark_box = QHBoxLayout()
 
         mark_line_num = QPushButton(self)
-        mark_line_num.setText(f"mark{self.mark_num}")
+        if mark_num == 0:
+            mark_line_num.setText(f"mark{self.mark_num}")
+        else:
+            mark_line_num.setText(f"mark{mark_num}")
         mark_line_num.setEnabled(False)
         mark_line_num.setFixedHeight(self.mark_input_height)
         mark_line_num.setFixedWidth(100)
+
         mark_line_name = QLineEdit(self)
+        if mark_name:
+            mark_line_name.setText(mark_name)
         mark_line_name.setFixedWidth(160)
         mark_line_name.setFixedHeight(self.mark_input_height)
+
         mark_line_value = QPlainTextEdit(self)
         # mark_line_value = QLineEdit(self)
         mark_line_value.setFixedHeight(self.mark_input_height)
+        if mark_val:
+            mark_line_value.setPlainText(mark_val)
 
         self.mark_box.addWidget(mark_line_num)
         self.mark_box.addWidget(mark_line_name)
@@ -274,10 +345,11 @@ class DocWriter(QWidget):
         # self.mark_box.setAlignment(Qt.AlignTop)
         self.mark_vbox.addLayout(self.mark_box)
         # self.mark_vbox.setAlignment(Qt.AlignTop)
-
-        self.mark_obj_dict[self.mark_num] = (mark_line_num,
-                                            mark_line_name,
-                                            mark_line_value)
+        value_tp = (mark_line_num, mark_line_name, mark_line_value)
+        if mark_num == 0:
+            self.mark_obj_dict[self.mark_num] = value_tp
+        else:
+            self.mark_obj_dict[mark_num] = value_tp
         return 
 
     def remove_mark(self):
@@ -353,8 +425,12 @@ class DocWriter(QWidget):
         return 
 
     def add_log(self, text):
+        if self.start_logo_view_over:
+            self.log_view.clear()
+            self.start_logo_view_over = False
         self.log_view.append(text)
         return 
+
 
     def mark_export_excel(self):
         export_path = QFileDialog.getExistingDirectory(self, 'Select Directory', './')
@@ -363,11 +439,16 @@ class DocWriter(QWidget):
         export_path += self.excel_export_filename
         export_path = export_path.replace("/", "\\")
         export_dict = {}
+        if self.mark_num == 0:
+            self.add_log(self.no_mark_input)
+            return 
         for mark_number in range(1, self.mark_num + 1):
+            print(self.mark_obj_dict[mark_number])
             lb_name_text = self.mark_obj_dict[mark_number][1].text()
             lb_value_text = self.mark_obj_dict[mark_number][2].toPlainText()
             export_dict[mark_number] = (lb_name_text, lb_value_text)
         self.amc.export_mark(export_dict, export_path)
+        self.add_log(self.export_success)
         return 
 
     def mark_import_excel(self):
@@ -377,10 +458,21 @@ class DocWriter(QWidget):
         imported_file = imported_file[0].replace("/", "\\")
         mark_dict = self.amc.import_mark(imported_file)
         print(mark_dict)
+
+        for w in self.file_workspace.findChildren(QLabel):
+            w.deleteLater()
+        for w in self.file_workspace.findChildren(QPushButton):
+            w.deleteLater()
+
+        self.mark_num = 0
+        for mark_num in mark_dict:
+            self.create_mark(int(mark_num), mark_dict[mark_num][0], mark_dict[mark_num][1])
+        self.mark_num = int(mark_num)
+        self.add_log(self.import_success)
         return 
 
     def __reset(self):
-        self.log_view.setText(self.log_comment)
+        self.log_view.clear()
         
         for w in self.groupbox.findChildren(QPushButton):
             w.deleteLater()
@@ -407,12 +499,29 @@ class DocWriter(QWidget):
         for mark_number in range(1, self.mark_num + 1):
             lb_name = self.mark_obj_dict[mark_number][1]
             lb_value = self.mark_obj_dict[mark_number][2]
-            print(lb_name.text(), lb_value.text())
+            # print(lb_name.text(), lb_value.text())
             print(lb_name.text(), lb_value.toPlainText())
         self.add_log(self.run_done)
+        return 
+
+    def __wonderful(self):
+        self.init_run_flog = True
+        show_we = ShowWe(self)
+        show_we.start()
         return 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = DocWriter()
     sys.exit(app.exec_())
+
+'''
+### 에러 사양
+- import 시, 형식이 갖추어지지 않은 엑셀일 경우 (중요!!)
+    - 1열 숫자 오름차순 맞는지
+
+### 수정 사항
+- import/export 파일 열지 않도록
+- class 호출하는 순간, 켜져있던 ms 문서들 다 종료됨 ;;
+
+'''
