@@ -1,16 +1,17 @@
+# -*- coding: utf-8 -*-
 import win32com.client as win32
 from win32com.client import Dispatch
 
 class ReplaceToMaker:
     def __init__(self) :
         self.word = win32.gencache.EnsureDispatch("Word.application")
-        self.excel = Dispatch("Excel.Application") #?—‘??? ?”„ë¡œê·¸?¨ ?‹¤?–‰
+        self.excel = Dispatch("Excel.Application") #
         self.excel.Visible = False
         self.word.Visible = False
         
 
     def ActiveVisible(self) :
-        self.excel.Visible = True #?•?œ¼ë¡? ?‹¤?–‰ê³¼ì •?„ ë³´ì´ê²?
+        self.excel.Visible = True #
         self.word.Visible = True
     def DeactiveVisible(self):
         self.excel.Visible = False
@@ -29,15 +30,15 @@ class ReplaceToMaker:
     def __search_replace_all_word(self, path, find_str, replace_str,target_path=""):
         doc = self.word.Documents.Open(path)
         maintext = self.word.ActiveDocument.StoryRanges(1)
-        a = maintext.Text.count(find_str) # ë³¸ë¬¸ ì¤? ì°¾ì„ ?‹¨?–´?˜ ?ˆ˜ë¥? ?„¼?‹¤.
+        a = maintext.Text.count(find_str) # 
 
         for i in range(0, a):
             self.word.Selection.GoTo(What=win32.constants.wdGoToSection, Which=win32.constants.wdGoToFirst)
-            self.word.Selection.Find.Text = find_str # ì°¾ì„ ?‹¨?–´ë¥? ì°¾ëŠ”?‹¤.
-            self.word.Selection.Find.Replacement.Text = "" # ì°¾ì„ ?‹¨?–´ë¥? ì§??š´?‹¤.
+            self.word.Selection.Find.Text = find_str # 
+            self.word.Selection.Find.Replacement.Text = "" # 
             self.word.Selection.Find.Execute(Replace=1, Forward=True)
-            self.word.Selection.InsertAfter(replace_str) # ?•´?‹¹ ?œ„ì¹˜ì— ?‚½?…?•˜ê³ ì ?•˜?Š” ?‹¨?–´ë¥? ?…? ¥?•œ?‹¤.
-
+            self.word.Selection.InsertAfter(replace_str) # 
+            
         if(target_path == ""):
             doc.Save()
         else:
@@ -59,7 +60,7 @@ class ReplaceToMaker:
 
 class ReadWriteExecl:
     def __init__(self) :
-        self.excel = Dispatch("Excel.Application") #?—‘??? ?”„ë¡œê·¸?¨ ?‹¤?–‰
+        self.excel = Dispatch("Excel.Application") #
     
     def read_mark(self,path):
         workbook = self.excel.Workbooks.Open(path)
@@ -73,7 +74,7 @@ class ReadWriteExecl:
         
 
     def write_mark(self,dict_mark,path):
-        wb = self.excel.Workbooks.Add() #?—‘??? ?”„ë¡œê·¸?¨?— Workbook ì¶”ê??(ê°ì²´ ?„¤? •)
+        wb = self.excel.Workbooks.Add() #
         ws = wb.Worksheets("sheet1")
         count = 2
         for key in dict_mark.keys():
@@ -98,7 +99,7 @@ class AutoMarkerChanger:
         return self.rwexcel.read_mark(path)
 
     def export_mark(self, dict_mark, path):
-        # dict(key: str mark_number, value: tuple(str name, str value), str ? ˆ???ê²½ë¡œ?´?”
+        # dict(key: str mark_number, value: tuple(str name, str value), str ?ï¿½ï¿½???ê²½ë¡œ?ï¿½ï¿½?ï¿½ï¿½
         self.rwexcel.write_mark(dict_mark, path)
 
     def run(self, origin_file_path_list, dict_mark, target_path):
@@ -114,7 +115,7 @@ class AutoMarkerChanger:
 if __name__ == "__main__":
     # rf = ReplaceToMaker()
     # rf.ActiveVisible()
-    # patht = r"D:\expert_project\auto_invoice\NEW ?‹œ?—˜?—°êµ¬ê³„?š?„œ 102?˜¸ (?˜ˆ?‹œ?–‘?‹?¬?•¨,ëª…íŒë³?ê²?).docx"
+    # patht = r"D:\expert_project\auto_invoice\NEW ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½êµ¬ê³„?ï¿½ï¿½?ï¿½ï¿½ 102?ï¿½ï¿½ (?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½,ëª…íŒï¿½?ï¿½?).docx"
     # print(rf.ReplaceToText(patht,"{@#mark@6}","test"))
 
     # re = ReadWriteExecl()
@@ -127,17 +128,7 @@ if __name__ == "__main__":
     amc.export_mark(mark_dict, r"D:\expert_project\auto_invoice\export2.xlsx")
 
     file_list = [
-        r"D:\expert_project\auto_invoice\NEW ?‹œ?—˜?—°êµ¬ê³„?š?„œ 102?˜¸ (?˜ˆ?‹œ?–‘?‹?¬?•¨,ëª…íŒë³?ê²?).docx",
-        r"D:\expert_project\auto_invoice\?š©?„?„¤ëª…ì„œ ?–‘?‹(??¬,ê²¬í’ˆ).doc",
-        r"D:\expert_project\auto_invoice\? „ê¸°ì¸ì¦? ë©´ì œ?™•?¸?„œ-ê±´ì¡°ê¸?.xlsx"
-    ]
+        ]
     amc.run(file_list, mark_dict, "")
-    # (filename, code)
-    '''
-    if ~~~~~ :
-        error!!!
-        print(!!!!)
-        return 3
-    dict = {3 : !!!!}
-    '''
+
 
