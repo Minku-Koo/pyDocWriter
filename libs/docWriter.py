@@ -1,4 +1,4 @@
-# -*- conding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # pip install pyqt5
 
 import sys
@@ -50,27 +50,33 @@ class DocWriter(QWidget):
         self.WIDTH = 600 * 2
         self.mark_num = 0
         self.logo_img_size = 80
-        self.mark_input_height = 40
+        self.mark_input_height = 30
         self.run_btn_height = 60
+        self.file_list_height = 17
+        self.file_list_icon_width = 20
         self.resize(self.WIDTH, self.HEIGHT)
 
-        self.title = "Ms Office Merger"
+        self.title = "MS OFFICE MERGER (MOM)"
         self.description = """Hi, This is Document Writer what you want"""
+        self.font_path = "./font/"
+        self.title_font_name = "Samsung Sharp Sans Bold"
+        self.samsung_one_font = "SamsungOne 400"
         self.img_path = "./img/"
         self.logo_file = "logo.png"
+        self.excel_icon_filename = "excel_icon.png"
+        self.docs_icon_filename = "docs_icon.png"
         self.gui_background_color = "white"
         self.reset_btn_name = 'RESET'
         self.help_btn_name = 'HELP'
         self.doc_load_name = "File Load"
-        self.select_options_name = ('새 문서에 작성', '기존 문서에 작성')
-        self.target_path_btn_name = 'Target'
+        self.target_path_btn_name = '저장 폴더 지정'
         self.excel_import_name = 'Import'
         self.excel_export_name = 'Export'
 
         self.log_comment = """This is Log View"""
         self.file_loaded_log = '''MS file uploaded!'''
         self.run_done = '''Work Done!'''
-        self.run_text = '실  행'
+        self.run_text = '실 행'
         self.mark_rem_btn_text = '삭 제'
         self.mark_add_btn_text = '추 가'
         
@@ -95,8 +101,11 @@ class DocWriter(QWidget):
         self.amc = msAuto.AutoMarkerChanger()
         self.excel_export_filename = '/Output_MsOfficeMerger.xlsx'
 
-        self.title_font = QFont()
-        self.title_font.setPointSize(30)
+        self.title_font = QFont(self.title_font_name, 35)
+        self.general_font = QFont(self.samsung_one_font)
+        
+        # self.title_font_name
+
 
         self.initGUI()
         return 
@@ -104,7 +113,7 @@ class DocWriter(QWidget):
     def initGUI(self): # main user interface 
         self.setWindowTitle(self.title) #GUI Title
         self.setWindowIcon(QIcon(self.img_path + self.logo_file)) #set Icon File, 16x16, PNG file
-        self.setStyleSheet(f"background-color:{self.gui_background_color};") #배경색 설정
+        self.setStyleSheet(f"background-color:{self.gui_background_color};") 
 
         self.grid = QGridLayout()
         self.setLayout(self.grid)
@@ -120,7 +129,7 @@ class DocWriter(QWidget):
         title = QLabel(self.title, self)
         title.setFont(self.title_font)
         title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet('border-style:solid;border-color:black;border-width:1px;')
+        # title.setStyleSheet('border-style:solid;border-color:black;border-width:1px;')
         self.grid.addWidget(title, 0, 2, 1, 3)
         
         doc_load_btn = QPushButton(self.doc_load_name, self)
@@ -223,7 +232,7 @@ class DocWriter(QWidget):
 
         logo_img = QPixmap(self.img_path + self.logo_file).scaled(self.logo_img_size, self.logo_img_size)
         logo_img_box = QLabel()
-        logo_img_box.resize(self.logo_img_size, self.logo_img_size)
+        # logo_img_box.resize(self.logo_img_size, self.logo_img_size)
         logo_img_box.setPixmap(logo_img)
         # logo_img_box.setText(f'''<a href="{self.our_logo_link_url}"><img src="{self.logo_file}"
         #                     width={self.logo_img_size} height={self.logo_img_size}></a>''')
@@ -287,12 +296,23 @@ class DocWriter(QWidget):
     def load_file_list(self):
         flist = QFileDialog.getOpenFileNames(self, 'Open file', './', 'ms file(*.xlsx *.xls *.docx)')
         for filename in flist[0]:
-            self.create_file_list_label(filename)
+            if not self.ms_loaded_file_label.get(filename):
+                self.create_file_list_label(filename)
         self.add_log(self.file_loaded_log)
         return 
 
     def create_file_list_label(self, filename):
         file_group_box = QHBoxLayout()
+        
+        if "xls" in filename.split(".")[-1]:
+            file_icon_img = QPixmap(self.img_path + self.excel_icon_filename).scaled(self.file_list_icon_width, self.file_list_height)
+        elif "doc" in filename.split(".")[-1]:
+            file_icon_img = QPixmap(self.img_path + self.docs_icon_filename).scaled(self.file_list_icon_width, self.file_list_height)
+        file_icon_img_box = QLabel()
+        file_icon_img_box.setFixedWidth(self.file_list_icon_width)
+        file_icon_img_box.setFixedHeight(self.file_list_height)
+        file_icon_img_box.setStyleSheet(self.no_border)
+        file_icon_img_box.setPixmap(file_icon_img)
 
         rem_btn = QPushButton(self)
         rem_btn.setText('X')
@@ -303,19 +323,21 @@ class DocWriter(QWidget):
         file_label = QLabel(self)
         file_label.setText(filename)
         file_label.setStyleSheet(self.no_border)
-
+        
         file_group_box.addWidget(rem_btn)
+        file_group_box.addWidget(file_icon_img_box)
         file_group_box.addWidget(file_label)
 
         self.file_vbox.addLayout(file_group_box)
         self.file_vbox.setAlignment(Qt.AlignTop)
 
-        self.ms_loaded_file_label[filename] = (rem_btn, file_label)
+        self.ms_loaded_file_label[filename] = (rem_btn, file_icon_img_box, file_label)
         return 
 
     def remove_file_list(self, filename):
         self.file_vbox.removeWidget(self.ms_loaded_file_label[filename][0])
         self.file_vbox.removeWidget(self.ms_loaded_file_label[filename][1])
+        self.file_vbox.removeWidget(self.ms_loaded_file_label[filename][2])
 
         del self.ms_loaded_file_label[filename]
         
