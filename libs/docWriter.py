@@ -101,6 +101,8 @@ class DocWriter(QWidget):
     def __init__(self):
         super().__init__()
         
+        ##################################################
+        ############# Size Space #########################
         self.HEIGHT = 700
         self.WIDTH = 600 * 2
         self.mark_num = 0
@@ -109,57 +111,91 @@ class DocWriter(QWidget):
         self.run_btn_height = 60
         self.file_list_height = 17
         self.file_list_icon_width = 20
+        self.mark_control_btn_height = 60
+        self.our_logo_btn_size = 70
         self.resize(self.WIDTH, self.HEIGHT)
 
+        ##################################################
+        ############# Text Space #########################
         self.title = "MS OFFICE MERGER (MOM)"
         self.font_path = "./font/"
-        self.title_font_name = "Samsung Sharp Sans Bold"
-        self.samsung_one_font = "SamsungOne 400"
         self.img_path = "./img/"
         self.logo_file = "logo.png"
         self.excel_icon_filename = "excel_icon.png"
         self.docs_icon_filename = "docs_icon.png"
-        self.gui_background_color = "white"
-        self.reset_btn_name = 'RESET'
-        self.help_btn_name = 'HELP'
-        self.doc_load_name = "File Load"
+        self.reset_btn_name = '초기화'
+        self.help_btn_name = '도움말'
+        self.doc_load_name = "파일 불러오기"
         self.target_path_btn_name = '저장 폴더 지정'
-        self.excel_import_name = 'Import'
-        self.excel_export_name = 'Export'
-
-        self.run_done = '''Work Done!'''
-        self.run_text = '실 행'
+        self.excel_import_name = '불러오기'
+        self.excel_export_name = '내보내기'
+        self.run_text = '실   행'
         self.mark_rem_btn_text = '삭 제'
         self.mark_add_btn_text = '추 가'
         
-        # self.ms_loaded_file_list = []
+        ##################################################
+        ############# variable Space #####################
         self.ms_loaded_file_index = 0
         self.ms_loaded_file_label = {}  # filename : (rem_btn_label, fileLabel)
 
         self.mark_obj_dict = {}             # markindex : (mark_line_num, mark_line_name, mark_line_value, rem_btn)
-        # self.mark_value_dict = {}           # markindex : 
 
-        self.output_target_path = './'
+        self.output_target_path = ''
 
         self.help_link_url = "https://www.naver.com/"
         self.our_logo_link_url = 'https://html-color-codes.info/Korean/'
-
-        self.target_active_style = 'border-style:solid;border-color:#000000;border-width:1px;'
-        self.target_unactive_style = 'border-style:solid;border-color:#c7c7c7;border-width:1px;'
-        self.no_border = 'border-width:0px;'
-
+        
         self.scroll_flag = True
         self.init_run_flog = True
         self.start_logo_view_over = False
 
-        self.amc = msAuto.AutoMarkerChanger()
-        self.excel_export_filename = '/Output_MsOfficeMerger.xlsx'
+        ##################################################
+        ############# Style ################################
 
-        self.title_font = QFont(self.title_font_name, 35)
-        self.general_font = QFont(self.samsung_one_font)
+        self.gui_background_color = "white"
+        self.title_font_name = "Samsung Sharp Sans Bold"
+        self.samsung_one_font = "SamsungOne 400"
+
+        self.simple_border_style = 'border-style:solid;border-color:#000000;border-width:1px;'
+
+        self.no_border = 'border-radius: 1px;border-width:0px; '
+        self.btn_default_style = '''background-color: white;
+                                    height: 25px;
+                                    border-radius: 4px;
+
+                                    color: #000000;
+                                    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, 
+                                    stop:0 #E6E6E6, 
+                                    stop:1 #BDBDBD);
+                                '''
+        self.run_btn_style = '''
+                            background-color: white;
+                            border-radius: 12px;
+                            font-size : 35px;
+                            font-weight : 900;
+                            color: #FA5858;
+
+                            color: white;
+                            background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1,
+                            stop:0 #819FF7, 
+                            stop:1 #0431B4);
+                            '''
+        self.sub_btn_style = '''
+                            height: 24px;
+                            border-radius: 2px;
+
+                            color: #6E6E6E;
+                            background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1,
+                            stop:0 #FAFAFA, 
+                            stop:1 #D8D8D8);
+                            '''
+
+        self.mark_header_style = '''
+                            border-radius: 2px;
+                            color : #2E2E2E;
+                            background-color: #E6E6E6;
+                            '''
         
-        # self.title_font_name
-
         ##################################################
         ############# Log ################################
         self.log_comment = """Log View"""
@@ -167,15 +203,22 @@ class DocWriter(QWidget):
         self.mark_value_not_enough = '''모든 칸을 채워주세요'''
         self.no_mark_input = '''하나 이상의 mark가 입력되어야 합니다'''
         self.target_not_exist = '''결과 저장 폴더를 지정해주세요'''
-        self.import_success = '''엑셀 파일에서 데이터 불러오기 성공'''
-        self.export_success = '''데이터 엑셀로 내보내기 성공'''
+        self.import_success = '''엑셀 파일에서 Mark 데이터 불러오기 성공'''
+        self.export_success = '''Mark 데이터 엑셀로 내보내기 성공'''
+        self.run_done = '''작업 완료!'''
+        self.log_color = {'red':"FF0000", 'blue':'2E2EFE'}
 
+        ##################################################
+        ############# Call Class #########################
+        self.amc = msAuto.AutoMarkerChanger()
+        self.excel_export_filename = '/Output_MsOfficeMerger.xlsx'
+
+        self.title_font = QFont(self.title_font_name, 35)
+        self.general_font = QFont(self.samsung_one_font)
         
-
-
         self.initGUI()
+        self.__show_our_logo_dynamic()
 
-        self.__wonderful()
         return 
 
     def initGUI(self): # main user interface 
@@ -202,12 +245,13 @@ class DocWriter(QWidget):
         
         doc_load_btn = QPushButton(self.doc_load_name, self)
         doc_load_btn.setText(self.doc_load_name)
+        doc_load_btn.setStyleSheet(self.btn_default_style)
         doc_load_btn.clicked.connect(self.load_file_list)
         self.grid.addWidget(doc_load_btn, 1, 0, 1, 1)
 
 
         self.file_workspace = QGroupBox(self)
-        self.file_workspace.setStyleSheet('border-style:solid;border-color:black;border-width:1px;')
+        self.file_workspace.setStyleSheet(self.simple_border_style)
         
 
         self.file_scroll_area = QScrollArea(self)
@@ -218,13 +262,7 @@ class DocWriter(QWidget):
 
         self.file_workspace.setLayout(self.file_vbox)
         self.file_scroll_area.setWidget(self.file_workspace)
-
-        # self.select_box = QComboBox(self)
-        # self.select_box.addItem(self.select_options_name[0])
-        # self.select_box.addItem(self.select_options_name[1])
-        # self.select_box.currentIndexChanged.connect(self.change_combo)
         
-        # self.grid.addWidget(self.select_box, 4, 0, 1, 1)
 
         return 
 
@@ -238,32 +276,39 @@ class DocWriter(QWidget):
 
         import_btn = QPushButton(self)
         import_btn.setText(self.excel_import_name)
+        import_btn.setStyleSheet(self.btn_default_style)
         import_btn.clicked.connect(self.mark_import_excel)
         self.grid.addWidget(import_btn, 9, 0, 1, 1)
 
         export_btn = QPushButton(self)
         export_btn.setText(self.excel_export_name)
+        export_btn.setStyleSheet(self.btn_default_style)
         export_btn.clicked.connect(self.mark_export_excel)
         self.grid.addWidget(export_btn, 9, 1, 1, 1)
 
         mark_rem_btn = QPushButton(self)
         mark_rem_btn.setText(self.mark_rem_btn_text)
+        mark_rem_btn.setStyleSheet(self.btn_default_style)
+        mark_rem_btn.setFixedWidth(self.mark_control_btn_height)
         mark_rem_btn.clicked.connect(self.remove_mark)
         self.grid.addWidget(mark_rem_btn, 9, 3, 1, 1)
 
         mark_plus_btn = QPushButton(self)
         mark_plus_btn.setText(self.mark_add_btn_text)
+        mark_plus_btn.setStyleSheet(self.btn_default_style)
+        mark_plus_btn.setFixedWidth(self.mark_control_btn_height)
         mark_plus_btn.clicked.connect(self.generate_mark)
         self.grid.addWidget(mark_plus_btn, 9, 4, 1, 1)
 
         self.target_btn = QPushButton(self)
         self.target_btn.setEnabled(True)
         self.target_btn.setText(self.target_path_btn_name)
+        self.target_btn.setStyleSheet(self.btn_default_style)
         self.target_btn.clicked.connect(self.set_output_target_path)
         self.grid.addWidget(self.target_btn, 10, 0, 1, 1)
 
         self.target_path_box = QLabel(self)
-        self.target_path_box.setStyleSheet(self.target_active_style)
+        self.target_path_box.setStyleSheet(self.simple_border_style)
         self.target_path_box.setText('')
         self.target_path_box.setFixedHeight(25)
         self.grid.addWidget(self.target_path_box, 10, 1, 1, 4)
@@ -278,11 +323,13 @@ class DocWriter(QWidget):
     def guiLogView(self):
         help_btn = QPushButton(self)
         help_btn.setText(self.help_btn_name)
+        help_btn.setStyleSheet(self.sub_btn_style)
         help_btn.clicked.connect(lambda: self.open_webbrowser(self.help_link_url))
         self.grid.addWidget(help_btn, 1, 8, 1, 1)
 
         init_btn = QPushButton(self)
         init_btn.setText(self.reset_btn_name)
+        init_btn.setStyleSheet(self.sub_btn_style)
         init_btn.clicked.connect(self.__reset)
         self.grid.addWidget(init_btn, 1, 9, 1, 1)
 
@@ -291,17 +338,24 @@ class DocWriter(QWidget):
 
         run_btn = QPushButton(self)
         run_btn.setText(self.run_text)
+        run_btn.setStyleSheet(self.run_btn_style)
         run_btn.clicked.connect(self.__run)
         run_btn.setFixedHeight(self.run_btn_height)
         self.grid.addWidget(run_btn, 9, 7, 2, 2)
 
-        logo_img = QPixmap(self.img_path + self.logo_file).scaled(self.logo_img_size, self.logo_img_size)
-        logo_img_box = QLabel()
-        logo_img_box.setPixmap(logo_img)
+        logo_img = QIcon(self.img_path + self.logo_file)
+        logo_img_box = QPushButton()
+        logo_img_box.setIcon(logo_img)
+        logo_img_box.clicked.connect(lambda: self.open_webbrowser(self.help_link_url)) 
+        logo_img_box.setStyleSheet(self.no_border)
+        logo_img_box.setIconSize(QSize(self.our_logo_btn_size, self.our_logo_btn_size)) 
         self.grid.addWidget(logo_img_box, 10, 9, 1, 1, alignment=Qt.AlignRight)
 
 
         return 
+
+
+    
 
     # + click event
     def generate_mark(self):
@@ -319,10 +373,11 @@ class DocWriter(QWidget):
 
         mark_line_num = QPushButton(self)
         if mark_num == 0:
-            mark_line_num.setText(f"mark{self.mark_num}")
+            mark_line_num.setText(f"Mark{self.mark_num}")
         else:
-            mark_line_num.setText(f"mark{mark_num}")
+            mark_line_num.setText(f"Mark{mark_num}")
         mark_line_num.setEnabled(False)
+        mark_line_num.setStyleSheet(self.mark_header_style)
         mark_line_num.setFixedHeight(self.mark_input_height)
         mark_line_num.setFixedWidth(100)
 
@@ -342,9 +397,7 @@ class DocWriter(QWidget):
         self.mark_box.addWidget(mark_line_name)
         self.mark_box.addWidget(mark_line_value)
 
-        # self.mark_box.setAlignment(Qt.AlignTop)
         self.mark_vbox.addLayout(self.mark_box)
-        # self.mark_vbox.setAlignment(Qt.AlignTop)
         value_tp = (mark_line_num, mark_line_name, mark_line_value)
         if mark_num == 0:
             self.mark_obj_dict[self.mark_num] = value_tp
@@ -367,10 +420,13 @@ class DocWriter(QWidget):
 
     def load_file_list(self):
         flist = QFileDialog.getOpenFileNames(self, 'Open file', './', 'ms file(*.xlsx *.xls *.docx)')
+        
         for filename in flist[0]:
             if not self.ms_loaded_file_label.get(filename):
                 self.create_file_list_label(filename)
-        self.add_log(self.file_loaded_log)
+
+        if flist[0]:
+            self.add_log(self.file_loaded_log)
         return 
 
     def create_file_list_label(self, filename):
@@ -424,11 +480,20 @@ class DocWriter(QWidget):
         webbrowser.open(url)
         return 
 
-    def add_log(self, text):
+    def add_log(self, text, color = 'black'):
         if self.start_logo_view_over:
             self.log_view.clear()
             self.start_logo_view_over = False
-        self.log_view.append(text)
+
+        if color != 'black':
+            if self.init_run_flog and not self.start_logo_view_over:
+                self.log_view.clear()
+                self.start_logo_view_over = False
+                self.init_run_flog = False
+
+            self.log_view.append(f'<span style=\"color:#{self.log_color[color]};\">{text}</span>')
+        else:
+            self.log_view.append(text)
         return 
 
 
@@ -489,22 +554,29 @@ class DocWriter(QWidget):
         self.ms_loaded_file_label = {}
         self.ms_loaded_file_index = 0
         self.mark_obj_dict = {} 
-        self.output_target_path = './'
+        self.output_target_path = ''
         self.target_path_box.setText('')
         return 
 
     def __run(self):
         if self.mark_num == 0:
+            self.add_log(self.no_mark_input, 'red')
+            return 
+        if not self.output_target_path:
+            self.add_log(self.target_not_exist, 'red')
             return 
         for mark_number in range(1, self.mark_num + 1):
-            lb_name = self.mark_obj_dict[mark_number][1]
-            lb_value = self.mark_obj_dict[mark_number][2]
-            # print(lb_name.text(), lb_value.text())
-            print(lb_name.text(), lb_value.toPlainText())
-        self.add_log(self.run_done)
+            print(self.mark_obj_dict[mark_number][1].text(), self.mark_obj_dict[mark_number][2].toPlainText())
+            if not self.mark_obj_dict[mark_number][1].text() or not self.mark_obj_dict[mark_number][2].toPlainText():
+                self.add_log(self.no_mark_input, 'red')
+                return 
+            lb_name = self.mark_obj_dict[mark_number][1].text()
+            lb_value = self.mark_obj_dict[mark_number][2].toPlainText()
+            # print(lb_name.text(), lb_value.toPlainText())
+        self.add_log(self.run_done, 'blue')
         return 
 
-    def __wonderful(self):
+    def __show_our_logo_dynamic(self):
         self.init_run_flog = True
         show_we = ShowWe(self)
         show_we.start()
@@ -523,5 +595,6 @@ if __name__ == '__main__':
 ### 수정 사항
 - import/export 파일 열지 않도록
 - class 호출하는 순간, 켜져있던 ms 문서들 다 종료됨 ;;
+- xlsx 말고 xls 에서도 작업 가능한지?
 
 '''
