@@ -199,13 +199,12 @@ class DocWriter(QWidget):
         ##################################################
         ############# Log ################################
         self.log_comment = """Log View"""
-        self.file_loaded_log = '''파일 업로드 완료'''
         self.mark_value_not_enough = '''모든 칸을 채워주세요'''
         self.no_mark_input = '''하나 이상의 mark가 입력되어야 합니다'''
         self.target_not_exist = '''결과 저장 폴더를 지정해주세요'''
         self.import_success = '''엑셀 파일에서 Mark 데이터 불러오기 성공'''
         self.export_success = '''Mark 데이터 엑셀로 내보내기 성공'''
-        self.run_done = '''작업 완료!'''
+        self.file_loaded_log = '''파일 업로드이 정상적으로 업로드 되었습니다'''
         self.log_color = {'red':"FF0000", 'blue':'2E2EFE'}
 
         ##################################################
@@ -217,7 +216,7 @@ class DocWriter(QWidget):
         self.general_font = QFont(self.samsung_one_font)
         
         self.initGUI()
-        self.__show_our_logo_dynamic()
+        # self.__show_our_logo_dynamic()
 
         return 
 
@@ -354,9 +353,6 @@ class DocWriter(QWidget):
 
         return 
 
-
-    
-
     # + click event
     def generate_mark(self):
         self.mark_num += 1
@@ -419,7 +415,7 @@ class DocWriter(QWidget):
         return 
 
     def load_file_list(self):
-        flist = QFileDialog.getOpenFileNames(self, 'Open file', './', 'ms file(*.xlsx *.xls *.docx)')
+        flist = QFileDialog.getOpenFileNames(self, 'Open file', './', 'ms file(*.xlsx *.xls *.docx *.doc)')
         
         for filename in flist[0]:
             if not self.ms_loaded_file_label.get(filename):
@@ -483,13 +479,13 @@ class DocWriter(QWidget):
     def add_log(self, text, color = 'black'):
         if self.start_logo_view_over:
             self.log_view.clear()
-            self.start_logo_view_over = False
+        #     self.start_logo_view_over = False
 
         if color != 'black':
-            if self.init_run_flog and not self.start_logo_view_over:
-                self.log_view.clear()
-                self.start_logo_view_over = False
-                self.init_run_flog = False
+            # if self.init_run_flog and not self.start_logo_view_over:
+            #     self.log_view.clear()
+            #     self.start_logo_view_over = False
+            #     self.init_run_flog = False
 
             self.log_view.append(f'<span style=\"color:#{self.log_color[color]};\">{text}</span>')
         else:
@@ -520,18 +516,20 @@ class DocWriter(QWidget):
         imported_file = QFileDialog.getOpenFileNames(self, 'Select Directory', './')[0]
         if not imported_file:
             return 
+        self.mark_obj_dict  = {}
         imported_file = imported_file[0].replace("/", "\\")
         mark_dict = self.amc.import_mark(imported_file)
         print(mark_dict)
-
-        for w in self.file_workspace.findChildren(QLabel):
+        for w in self.groupbox.findChildren(QPushButton):
             w.deleteLater()
-        for w in self.file_workspace.findChildren(QPushButton):
+        for w in self.groupbox.findChildren(QLineEdit):
+            w.deleteLater()
+        for w in self.groupbox.findChildren(QPlainTextEdit):
             w.deleteLater()
 
         self.mark_num = 0
         for mark_num in mark_dict:
-            self.create_mark(int(mark_num), mark_dict[mark_num][0], mark_dict[mark_num][1])
+            self.create_mark(int(mark_num), str(mark_dict[mark_num][0]), str(mark_dict[mark_num][1]))
         self.mark_num = int(mark_num)
         self.add_log(self.import_success)
         return 
@@ -558,6 +556,11 @@ class DocWriter(QWidget):
         self.target_path_box.setText('')
         return 
 
+    def file_work_result(self, filename, done = True):
+        if not done:
+            return f'''{filename} -> 작업 실패'''
+        return f'''{filename} -> 작업 성공'''
+
     def __run(self):
         if self.mark_num == 0:
             self.add_log(self.no_mark_input, 'red')
@@ -565,6 +568,8 @@ class DocWriter(QWidget):
         if not self.output_target_path:
             self.add_log(self.target_not_exist, 'red')
             return 
+
+        mark_dict = {}
         for mark_number in range(1, self.mark_num + 1):
             print(self.mark_obj_dict[mark_number][1].text(), self.mark_obj_dict[mark_number][2].toPlainText())
             if not self.mark_obj_dict[mark_number][1].text() or not self.mark_obj_dict[mark_number][2].toPlainText():
@@ -572,8 +577,17 @@ class DocWriter(QWidget):
                 return 
             lb_name = self.mark_obj_dict[mark_number][1].text()
             lb_value = self.mark_obj_dict[mark_number][2].toPlainText()
+            mark_dict[mark_number] = (lb_name, lb_value)
             # print(lb_name.text(), lb_value.toPlainText())
-        self.add_log(self.run_done, 'blue')
+        print(self.ms_loaded_file_label.keys())
+        print(f"targetPath input: {self.output_target_path}")
+        ret = self.amc.run(list(self.ms_loaded_file_label.keys()), mark_dict, self.output_target_path)
+        
+        for log_info in ret:
+            if log_info[1] == 0: # success
+                self.add_log(self.file_work_result(log_info[0], True), 'blue')
+            else:
+                self.add_log(self.file_work_result(log_info[0]), 'red')
         return 
 
     def __show_our_logo_dynamic(self):
