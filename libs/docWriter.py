@@ -8,12 +8,12 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QWidget, QDesktopWidget, QApplication, QGridLayout, QLabel, QLineEdit, QTextEdit
-import os
+# import os
 import time
 import webbrowser
-import datetime 
-from PyQt5 import uic
-from utils import msAuto
+# import datetime 
+# from PyQt5 import uic
+from methods import msAuto
 
 class Worker(QThread):
     def __init__(self, parents):
@@ -83,7 +83,7 @@ class ShowWe(QThread):
                 self.stop()
 
     def __show(self):
-        self.parents.add_log(self.show_log[self.num])
+        self.parents.add_log(self.show_log[self.num], 'black')
         self.num += 1
         if len(self.show_log) == self.num:
             self.parents.init_run_flog = False
@@ -109,8 +109,8 @@ class DocWriter(QWidget):
         self.logo_img_size = 80
         self.mark_input_height = 30
         self.run_btn_height = 60
-        self.file_list_height = 17
-        self.file_list_icon_width = 20
+        self.file_list_height = 20
+        self.file_list_icon_width = 24
         self.mark_control_btn_height = 60
         self.our_logo_btn_size = 70
         self.resize(self.WIDTH, self.HEIGHT)
@@ -130,8 +130,8 @@ class DocWriter(QWidget):
         self.excel_import_name = '불러오기'
         self.excel_export_name = '내보내기'
         self.run_text = '실   행'
-        self.mark_rem_btn_text = '삭 제'
-        self.mark_add_btn_text = '추 가'
+        self.mark_rem_btn_text = '-'
+        self.mark_add_btn_text = '+'
         
         ##################################################
         ############# variable Space #####################
@@ -151,61 +151,39 @@ class DocWriter(QWidget):
 
         ##################################################
         ############# Style ################################
-
-        self.gui_background_color = "white"
+        self.gui_background_color = 'white'#"#FAFAFA"
         self.title_font_name = "Samsung Sharp Sans Bold"
         self.samsung_one_font = "SamsungOne 400"
 
         self.simple_border_style = 'border-style:solid;border-color:#000000;border-width:1px;'
 
         self.no_border = 'border-radius: 1px;border-width:0px; '
-        self.btn_default_style = '''background-color: white;
-                                    height: 25px;
-                                    border-radius: 4px;
-
-                                    color: #000000;
-                                    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, 
-                                    stop:0 #E6E6E6, 
-                                    stop:1 #BDBDBD);
+        
+        self.btn_default_style = '''
                                 '''
-        self.run_btn_style = '''
-                            background-color: white;
-                            border-radius: 12px;
-                            font-size : 35px;
+        self.run_btn_style = '''font-size : 35px;
                             font-weight : 900;
-                            color: #FA5858;
-
-                            color: white;
-                            background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1,
-                            stop:0 #819FF7, 
-                            stop:1 #0431B4);
                             '''
         self.sub_btn_style = '''
-                            height: 24px;
-                            border-radius: 2px;
-
-                            color: #6E6E6E;
-                            background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1,
-                            stop:0 #FAFAFA, 
-                            stop:1 #D8D8D8);
                             '''
 
         self.mark_header_style = '''
-                            border-radius: 2px;
-                            color : #2E2E2E;
-                            background-color: #E6E6E6;
                             '''
-        
+        self.header_style_sheet = '''
+                                    border-radius: 1px;
+                                    color : #2E2E2E;
+                                    background-color: #E6E6E6;
+                                    '''
         ##################################################
         ############# Log ################################
-        self.log_comment = """Log View"""
+        self.log_comment = """이곳에 작업 로그가 보여집니다."""
         self.mark_value_not_enough = '''모든 칸을 채워주세요'''
         self.no_mark_input = '''하나 이상의 mark가 입력되어야 합니다'''
         self.target_not_exist = '''결과 저장 폴더를 지정해주세요'''
         self.import_success = '''엑셀 파일에서 Mark 데이터 불러오기 성공'''
         self.export_success = '''Mark 데이터 엑셀로 내보내기 성공'''
         self.file_loaded_log = '''파일 업로드이 정상적으로 업로드 되었습니다'''
-        self.log_color = {'red':"FF0000", 'blue':'2E2EFE'}
+        self.log_color = {'red':"FF0000", 'blue':'2E2EFE', 'black':'000000'}
 
         ##################################################
         ############# Call Class #########################
@@ -242,26 +220,25 @@ class DocWriter(QWidget):
         # title.setStyleSheet('border-style:solid;border-color:black;border-width:1px;')
         self.grid.addWidget(title, 0, 2, 1, 3)
         
+
+        self.file_workspace = QGroupBox(self)
+        # self.file_workspace.setStyleSheet(self.simple_border_style)
+        self.file_scroll_area = QScrollArea(self)
+        self.file_scroll_area.setWidgetResizable(True)
+        self.grid.addWidget(self.file_scroll_area, 1, 0, 2, 5)
+
+        self.file_vbox = QVBoxLayout()
+        self.file_workspace.setLayout(self.file_vbox)
+
+        self.file_scroll_area.setWidget(self.file_workspace)
+
         doc_load_btn = QPushButton(self.doc_load_name, self)
         doc_load_btn.setText(self.doc_load_name)
         doc_load_btn.setStyleSheet(self.btn_default_style)
         doc_load_btn.clicked.connect(self.load_file_list)
-        self.grid.addWidget(doc_load_btn, 1, 0, 1, 1)
+        self.grid.addWidget(doc_load_btn, 3, 0, 1, 1)
 
-
-        self.file_workspace = QGroupBox(self)
-        self.file_workspace.setStyleSheet(self.simple_border_style)
-        
-
-        self.file_scroll_area = QScrollArea(self)
-        self.file_scroll_area.setWidgetResizable(True)
-        self.grid.addWidget(self.file_scroll_area, 2, 0, 2, 5)
-
-        self.file_vbox = QVBoxLayout()
-
-        self.file_workspace.setLayout(self.file_vbox)
-        self.file_scroll_area.setWidget(self.file_workspace)
-        
+        self.create_file_list_label('', header = True)
 
         return 
 
@@ -304,19 +281,20 @@ class DocWriter(QWidget):
         self.target_btn.setText(self.target_path_btn_name)
         self.target_btn.setStyleSheet(self.btn_default_style)
         self.target_btn.clicked.connect(self.set_output_target_path)
-        self.grid.addWidget(self.target_btn, 10, 0, 1, 1)
+        self.grid.addWidget(self.target_btn, 10, 0, 1, 1, alignment=Qt.AlignTop)
 
         self.target_path_box = QLabel(self)
         self.target_path_box.setStyleSheet(self.simple_border_style)
         self.target_path_box.setText('')
         self.target_path_box.setFixedHeight(25)
-        self.grid.addWidget(self.target_path_box, 10, 1, 1, 4)
+        self.grid.addWidget(self.target_path_box, 10, 1, 1, 4, alignment=Qt.AlignTop)
 
         
         self.groupbox.setLayout(self.mark_vbox)
         self.group_scroll_area.setWidget(self.groupbox)
 
-        # self.generate_mark()
+        self.generate_mark(header = True)
+        self.generate_mark()
         return 
 
     def guiLogView(self):
@@ -324,24 +302,26 @@ class DocWriter(QWidget):
         help_btn.setText(self.help_btn_name)
         help_btn.setStyleSheet(self.sub_btn_style)
         help_btn.clicked.connect(lambda: self.open_webbrowser(self.help_link_url))
-        self.grid.addWidget(help_btn, 1, 8, 1, 1)
+        self.grid.addWidget(help_btn, 0, 8, 1, 1, alignment=Qt.AlignBottom)
 
         init_btn = QPushButton(self)
         init_btn.setText(self.reset_btn_name)
         init_btn.setStyleSheet(self.sub_btn_style)
         init_btn.clicked.connect(self.__reset)
-        self.grid.addWidget(init_btn, 1, 9, 1, 1)
+        self.grid.addWidget(init_btn, 0, 9, 1, 1, alignment=Qt.AlignBottom)
 
         self.log_view = QTextBrowser(self)
-        self.grid.addWidget(self.log_view, 2, 7, 7, 3)
+        self.log_view.append(self.log_comment)
+        self.grid.addWidget(self.log_view, 1, 7, 8, 3)
 
         run_btn = QPushButton(self)
         run_btn.setText(self.run_text)
         run_btn.setStyleSheet(self.run_btn_style)
         run_btn.clicked.connect(self.__run)
         run_btn.setFixedHeight(self.run_btn_height)
-        self.grid.addWidget(run_btn, 9, 7, 2, 2)
+        self.grid.addWidget(run_btn, 9, 7, 2, 3, alignment=Qt.AlignTop)
 
+        '''
         logo_img = QIcon(self.img_path + self.logo_file)
         logo_img_box = QPushButton()
         logo_img_box.setIcon(logo_img)
@@ -349,14 +329,15 @@ class DocWriter(QWidget):
         logo_img_box.setStyleSheet(self.no_border)
         logo_img_box.setIconSize(QSize(self.our_logo_btn_size, self.our_logo_btn_size)) 
         self.grid.addWidget(logo_img_box, 10, 9, 1, 1, alignment=Qt.AlignRight)
-
+        '''
 
         return 
 
     # + click event
-    def generate_mark(self):
-        self.mark_num += 1
-        self.create_mark()
+    def generate_mark(self, header = False):
+        if not header:
+            self.mark_num += 1
+        self.create_mark(header = header)
 
         self.scroll_flag = True
         self.worker = Worker(self)
@@ -364,41 +345,73 @@ class DocWriter(QWidget):
 
         return 
 
-    def create_mark(self, mark_num = 0, mark_name = '', mark_val = ''):
+    def create_mark(self, mark_num = 0, mark_name = '', mark_val = '', header = False):
         self.mark_box = QHBoxLayout()
 
-        mark_line_num = QPushButton(self)
-        if mark_num == 0:
-            mark_line_num.setText(f"Mark{self.mark_num}")
+        
+        if header:
+            mark_line_num = QLabel(self)
+            mark_line_num.setText('번호')
+            mark_line_num.setStyleSheet(self.header_style_sheet)
+            # mark_line_num.setStyleSheet(self.mark_header_style)
         else:
-            mark_line_num.setText(f"Mark{mark_num}")
-        mark_line_num.setEnabled(False)
-        mark_line_num.setStyleSheet(self.mark_header_style)
+            mark_line_num = QPushButton(self)
+            if mark_num == 0:
+                mark_line_num.setText(f"MOM{self.mark_num}")
+            else:
+                mark_line_num.setText(f"MOM{mark_num}")
+            
+            mark_line_num.setStyleSheet(self.mark_header_style)
         mark_line_num.setFixedHeight(self.mark_input_height)
         mark_line_num.setFixedWidth(100)
+        mark_line_num.setEnabled(False)
 
-        mark_line_name = QLineEdit(self)
-        if mark_name:
-            mark_line_name.setText(mark_name)
-        mark_line_name.setFixedWidth(160)
+        mark_line_name = QLineEdit()
+        # mark_line_name = QLabel()
+        if header:
+            mark_line_name = QLabel(self)
+            mark_line_name.setText('Name')
+            mark_line_name.setAlignment(Qt.AlignCenter)
+            mark_line_name.setStyleSheet(self.header_style_sheet)
+            # mark_line_name.setFixedWidth(160)
+            # mark_line_name.setFixedHeight(self.mark_input_height)
+        else:
+            mark_line_name = QLineEdit(self)
+            if mark_name:
+                mark_line_name.setText(mark_name)
+        mark_line_name.setFixedWidth(220)
         mark_line_name.setFixedHeight(self.mark_input_height)
+        
 
-        mark_line_value = QPlainTextEdit(self)
-        # mark_line_value = QLineEdit(self)
+        if header:
+            mark_line_value = QLabel(self)
+            mark_line_value.setText('Value')
+            mark_line_value.setAlignment(Qt.AlignCenter)
+            mark_line_value.setStyleSheet(self.header_style_sheet)
+        else:
+            mark_line_value = QPlainTextEdit(self)
+            # mark_line_value = QLineEdit(self)
+            if mark_val:
+                mark_line_value.setPlainText(mark_val)
+
+        mark_line_value.setFixedWidth(450)
         mark_line_value.setFixedHeight(self.mark_input_height)
-        if mark_val:
-            mark_line_value.setPlainText(mark_val)
 
         self.mark_box.addWidget(mark_line_num)
-        self.mark_box.addWidget(mark_line_name)
         self.mark_box.addWidget(mark_line_value)
+        self.mark_box.addWidget(mark_line_name)
 
         self.mark_vbox.addLayout(self.mark_box)
-        value_tp = (mark_line_num, mark_line_name, mark_line_value)
-        if mark_num == 0:
-            self.mark_obj_dict[self.mark_num] = value_tp
-        else:
-            self.mark_obj_dict[mark_num] = value_tp
+        self.mark_box.setAlignment(Qt.AlignTop)
+        self.mark_vbox.setAlignment(Qt.AlignTop)
+
+        if not header:
+            value_tp = (mark_line_num, mark_line_name, mark_line_value)
+            
+            if mark_num == 0:
+                self.mark_obj_dict[self.mark_num] = value_tp
+            else:
+                self.mark_obj_dict[mark_num] = value_tp
         return 
 
     def remove_mark(self):
@@ -422,31 +435,48 @@ class DocWriter(QWidget):
                 self.create_file_list_label(filename)
 
         if flist[0]:
-            self.add_log(self.file_loaded_log)
+            self.add_log(self.file_loaded_log, 'black')
         return 
 
-    def create_file_list_label(self, filename):
+    def create_file_list_label(self, filename, header = False):
         file_group_box = QHBoxLayout()
+        if not header:
+            if "xls" in filename.split(".")[-1]:
+                file_icon_img = QPixmap(self.img_path + self.excel_icon_filename).scaled(self.file_list_icon_width, self.file_list_height)
+            elif "doc" in filename.split(".")[-1]:
+                file_icon_img = QPixmap(self.img_path + self.docs_icon_filename).scaled(self.file_list_icon_width, self.file_list_height)
         
-        if "xls" in filename.split(".")[-1]:
-            file_icon_img = QPixmap(self.img_path + self.excel_icon_filename).scaled(self.file_list_icon_width, self.file_list_height)
-        elif "doc" in filename.split(".")[-1]:
-            file_icon_img = QPixmap(self.img_path + self.docs_icon_filename).scaled(self.file_list_icon_width, self.file_list_height)
         file_icon_img_box = QLabel()
-        file_icon_img_box.setFixedWidth(self.file_list_icon_width)
-        file_icon_img_box.setFixedHeight(self.file_list_height)
-        file_icon_img_box.setStyleSheet(self.no_border)
-        file_icon_img_box.setPixmap(file_icon_img)
+        
+        if header:
+            file_icon_img_box = QLabel()
+            file_icon_img_box.setStyleSheet(self.header_style_sheet)
+            file_icon_img_box.setText("종류")
+            file_icon_img_box.setFixedWidth(self.file_list_icon_width)
+        else:
+            file_icon_img_box.setFixedWidth(self.file_list_icon_width)
+            file_icon_img_box.setFixedHeight(self.file_list_height)
+            file_icon_img_box.setStyleSheet(self.no_border)
+            file_icon_img_box.setPixmap(file_icon_img)
 
         rem_btn = QPushButton(self)
-        rem_btn.setText('X')
-        rem_btn.clicked.connect(lambda: self.remove_file_list(filename))
-        rem_btn.setFixedWidth(20)
+        if header:
+            rem_btn.setText("삭제")
+            rem_btn.setStyleSheet(self.header_style_sheet)
+        else:
+            rem_btn.setText('X')
+            rem_btn.clicked.connect(lambda: self.remove_file_list(filename))
+        rem_btn.setFixedWidth(30)
         rem_btn.setFixedHeight(20)
 
         file_label = QLabel(self)
-        file_label.setText(filename)
-        file_label.setStyleSheet(self.no_border)
+        if header:
+            file_label.setText("파일명")
+            file_label.setAlignment(Qt.AlignCenter)
+            file_label.setStyleSheet(self.header_style_sheet)
+        else:
+            file_label.setText(filename)
+            file_label.setStyleSheet(self.no_border)
         
         file_group_box.addWidget(rem_btn)
         file_group_box.addWidget(file_icon_img_box)
@@ -486,10 +516,9 @@ class DocWriter(QWidget):
             #     self.log_view.clear()
             #     self.start_logo_view_over = False
             #     self.init_run_flog = False
+            pass
 
-            self.log_view.append(f'<span style=\"color:#{self.log_color[color]};\">{text}</span>')
-        else:
-            self.log_view.append(text)
+        self.log_view.append(f'<span style=\"color:#{self.log_color[color]};\">{text}</span>')
         return 
 
 
@@ -501,7 +530,7 @@ class DocWriter(QWidget):
         export_path = export_path.replace("/", "\\")
         export_dict = {}
         if self.mark_num == 0:
-            self.add_log(self.no_mark_input)
+            self.add_log(self.no_mark_input, 'red')
             return 
         for mark_number in range(1, self.mark_num + 1):
             print(self.mark_obj_dict[mark_number])
@@ -509,7 +538,7 @@ class DocWriter(QWidget):
             lb_value_text = self.mark_obj_dict[mark_number][2].toPlainText()
             export_dict[mark_number] = (lb_name_text, lb_value_text)
         self.amc.export_mark(export_dict, export_path)
-        self.add_log(self.export_success)
+        self.add_log(self.export_success, 'black')
         return 
 
     def mark_import_excel(self):
@@ -529,9 +558,9 @@ class DocWriter(QWidget):
 
         self.mark_num = 0
         for mark_num in mark_dict:
-            self.create_mark(int(mark_num), str(mark_dict[mark_num][0]), str(mark_dict[mark_num][1]))
+            self.create_mark(mark_num= int(mark_num), mark_val= str(mark_dict[mark_num][1]), mark_name= str(mark_dict[mark_num][0]))
         self.mark_num = int(mark_num)
-        self.add_log(self.import_success)
+        self.add_log(self.import_success, 'black')
         return 
 
     def __reset(self):
@@ -579,8 +608,7 @@ class DocWriter(QWidget):
             lb_value = self.mark_obj_dict[mark_number][2].toPlainText()
             mark_dict[mark_number] = (lb_name, lb_value)
             # print(lb_name.text(), lb_value.toPlainText())
-        print(self.ms_loaded_file_label.keys())
-        print(f"targetPath input: {self.output_target_path}")
+        
         ret = self.amc.run(list(self.ms_loaded_file_label.keys()), mark_dict, self.output_target_path)
         
         for log_info in ret:
@@ -601,7 +629,7 @@ if __name__ == '__main__':
     ex = DocWriter()
     sys.exit(app.exec_())
 
-'''
+"""'''
 ### 에러 사양
 - import 시, 형식이 갖추어지지 않은 엑셀일 경우 (중요!!)
     - 1열 숫자 오름차순 맞는지
@@ -611,4 +639,50 @@ if __name__ == '__main__':
 - class 호출하는 순간, 켜져있던 ms 문서들 다 종료됨 ;;
 - xlsx 말고 xls 에서도 작업 가능한지?
 
-'''
+
+- 초기화 확인
+- 이스터에그
+- mark 헤더
+- 실행 존나 크게
+- 파일 불러오기 아래로
+- 파일불러오기 -> 파일명, 삭제
+
+
+
+self.btn_default_style = '''background-color: white;
+                                    height: 25px;
+                                    border-radius: 4px;
+
+                                    color: #000000;
+                                    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, 
+                                    stop:0 #E6E6E6, 
+                                    stop:1 #BDBDBD);
+                                '''
+        self.run_btn_style = '''
+                            background-color: white;
+                            border-radius: 12px;
+                            font-size : 35px;
+                            font-weight : 900;
+                            color: #FA5858;
+
+                            color: white;
+                            background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1,
+                            stop:0 #819FF7, 
+                            stop:1 #0431B4);
+                            '''
+        self.sub_btn_style = '''
+                            height: 24px;
+                            border-radius: 0px;
+
+                            color: #6E6E6E;
+                            background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1,
+                            stop:0 #FAFAFA, 
+                            stop:1 #D8D8D8);
+                            '''
+
+        self.mark_header_style = '''
+                            border-radius: 2px;
+                            color : #2E2E2E;
+                            background-color: #E6E6E6;
+                            '''
+"""
