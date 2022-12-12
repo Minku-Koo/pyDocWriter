@@ -46,10 +46,12 @@ class ReplaceToMaker:
             if(target_path == ""):
                 doc.Save
             else:
+                print(target_path)
                 doc.SaveAs(target_path)
             doc.Close()
             return 0
-        except:
+        except Exception as e :
+            print(e)
             return -1
 
     def __search_replace_all_excel(self, path, dict_mark, target_path):
@@ -144,6 +146,7 @@ class AutoMarkerChanger:
 
 
         for path in origin_file_path_list:
+            path = path.replace('/','\\') 
             filename = path.split('\\')[-1]
             targetfilepath = target_path+filename
             if os.path.exists(targetfilepath):
@@ -155,10 +158,6 @@ class AutoMarkerChanger:
             ret=rtmark.ReplaceToText(path, dict_mark,targetfilepath)
             log.append((targetfilepath,ret))
         return log
-
-
-
-
 
 
 if __name__ == "__main__":

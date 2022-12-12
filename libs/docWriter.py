@@ -110,14 +110,14 @@ class DocWriter(QWidget):
         self.mark_input_height = 30
         self.run_btn_height = 60
         self.file_list_height = 20
-        self.file_list_icon_width = 24
+        self.file_list_icon_width = 26
         self.mark_control_btn_height = 60
         self.our_logo_btn_size = 70
-        self.resize(self.WIDTH, self.HEIGHT)
+        self.setFixedSize(self.WIDTH, self.HEIGHT)
 
         ##################################################
         ############# Text Space #########################
-        self.title = "MS OFFICE MERGER (MOM)"
+        self.title = "MS OFFICE MERGER (MOM)"   # Documents Changer
         self.font_path = "./font/"
         self.img_path = "./img/"
         self.logo_file = "logo.png"
@@ -132,6 +132,8 @@ class DocWriter(QWidget):
         self.run_text = '실   행'
         self.mark_rem_btn_text = '-'
         self.mark_add_btn_text = '+'
+        self.init_alert_msg = '''초기화를 진행하시겠습니까?''' 
+        self.init_alert_title = '''Reset Confirm'''
         
         ##################################################
         ############# variable Space #####################
@@ -176,13 +178,16 @@ class DocWriter(QWidget):
                                     '''
         ##################################################
         ############# Log ################################
+        self.mark_naming = 'MOM'
         self.log_comment = """이곳에 작업 로그가 보여집니다."""
         self.mark_value_not_enough = '''모든 칸을 채워주세요'''
-        self.no_mark_input = '''하나 이상의 mark가 입력되어야 합니다'''
+        self.no_mark_input = f'''하나 이상의 {self.mark_naming}가 입력되어야 합니다'''
         self.target_not_exist = '''결과 저장 폴더를 지정해주세요'''
         self.import_success = '''엑셀 파일에서 Mark 데이터 불러오기 성공'''
-        self.export_success = '''Mark 데이터 엑셀로 내보내기 성공'''
+        self.export_success = f'''{self.mark_naming} 데이터 엑셀로 내보내기 성공'''
         self.file_loaded_log = '''파일 업로드이 정상적으로 업로드 되었습니다'''
+        self.no_file_input = '''1개 이상의 파일을 업로드해주세요.'''
+        self.not_enough_mark_value = f'''입력되지 않은 {self.mark_naming}가 있습니다.'''
         self.log_color = {'red':"FF0000", 'blue':'2E2EFE', 'black':'000000'}
 
         ##################################################
@@ -191,7 +196,7 @@ class DocWriter(QWidget):
         self.excel_export_filename = '/Output_MsOfficeMerger.xlsx'
 
         self.title_font = QFont(self.title_font_name, 35)
-        self.general_font = QFont(self.samsung_one_font)
+        self.general_font = QFont(self.title_font_name)
         
         self.initGUI()
         # self.__show_our_logo_dynamic()
@@ -318,6 +323,7 @@ class DocWriter(QWidget):
         run_btn.setText(self.run_text)
         run_btn.setStyleSheet(self.run_btn_style)
         run_btn.clicked.connect(self.__run)
+        run_btn.setFont(self.general_font)
         run_btn.setFixedHeight(self.run_btn_height)
         self.grid.addWidget(run_btn, 9, 7, 2, 3, alignment=Qt.AlignTop)
 
@@ -348,18 +354,18 @@ class DocWriter(QWidget):
     def create_mark(self, mark_num = 0, mark_name = '', mark_val = '', header = False):
         self.mark_box = QHBoxLayout()
 
-        
         if header:
             mark_line_num = QLabel(self)
             mark_line_num.setText('번호')
             mark_line_num.setStyleSheet(self.header_style_sheet)
+            mark_line_num.setAlignment(Qt.AlignCenter)
             # mark_line_num.setStyleSheet(self.mark_header_style)
         else:
             mark_line_num = QPushButton(self)
             if mark_num == 0:
-                mark_line_num.setText(f"MOM{self.mark_num}")
+                mark_line_num.setText(f"{self.mark_naming}{self.mark_num}")
             else:
-                mark_line_num.setText(f"MOM{mark_num}")
+                mark_line_num.setText(f"{self.mark_naming}{mark_num}")
             
             mark_line_num.setStyleSheet(self.mark_header_style)
         mark_line_num.setFixedHeight(self.mark_input_height)
@@ -370,7 +376,7 @@ class DocWriter(QWidget):
         # mark_line_name = QLabel()
         if header:
             mark_line_name = QLabel(self)
-            mark_line_name.setText('Name')
+            mark_line_name.setText('설명')
             mark_line_name.setAlignment(Qt.AlignCenter)
             mark_line_name.setStyleSheet(self.header_style_sheet)
             # mark_line_name.setFixedWidth(160)
@@ -379,13 +385,13 @@ class DocWriter(QWidget):
             mark_line_name = QLineEdit(self)
             if mark_name:
                 mark_line_name.setText(mark_name)
-        mark_line_name.setFixedWidth(220)
+        mark_line_name.setFixedWidth(250)
         mark_line_name.setFixedHeight(self.mark_input_height)
         
 
         if header:
             mark_line_value = QLabel(self)
-            mark_line_value.setText('Value')
+            mark_line_value.setText('데이터')
             mark_line_value.setAlignment(Qt.AlignCenter)
             mark_line_value.setStyleSheet(self.header_style_sheet)
         else:
@@ -394,7 +400,7 @@ class DocWriter(QWidget):
             if mark_val:
                 mark_line_value.setPlainText(mark_val)
 
-        mark_line_value.setFixedWidth(450)
+        mark_line_value.setFixedWidth(440)
         mark_line_value.setFixedHeight(self.mark_input_height)
 
         self.mark_box.addWidget(mark_line_num)
@@ -403,7 +409,14 @@ class DocWriter(QWidget):
 
         self.mark_vbox.addLayout(self.mark_box)
         self.mark_box.setAlignment(Qt.AlignTop)
-        self.mark_vbox.setAlignment(Qt.AlignTop)
+        if header:
+            # self.mark_box.setAlignment(Qt.AlignTop)
+            self.mark_vbox.setAlignment(Qt.AlignTop)
+        else:
+            # self.mark_box.setAlignment(Qt.AlignTop)
+            self.mark_vbox.setAlignment(Qt.AlignTop)
+            # self.groupbox.setAlignment(Qt.AlignTop)
+            pass
 
         if not header:
             value_tp = (mark_line_num, mark_line_name, mark_line_value)
@@ -424,7 +437,6 @@ class DocWriter(QWidget):
         
         del  self.mark_obj_dict[self.mark_num]
         self.mark_num -= 1
-        self.mark_vbox.setAlignment(Qt.AlignTop)
         return 
 
     def load_file_list(self):
@@ -458,6 +470,7 @@ class DocWriter(QWidget):
             file_icon_img_box.setFixedHeight(self.file_list_height)
             file_icon_img_box.setStyleSheet(self.no_border)
             file_icon_img_box.setPixmap(file_icon_img)
+        
 
         rem_btn = QPushButton(self)
         if header:
@@ -466,7 +479,7 @@ class DocWriter(QWidget):
         else:
             rem_btn.setText('X')
             rem_btn.clicked.connect(lambda: self.remove_file_list(filename))
-        rem_btn.setFixedWidth(30)
+        rem_btn.setFixedWidth(34)
         rem_btn.setFixedHeight(20)
 
         file_label = QLabel(self)
@@ -477,6 +490,8 @@ class DocWriter(QWidget):
         else:
             file_label.setText(filename)
             file_label.setStyleSheet(self.no_border)
+
+        file_label.setFixedWidth(740)
         
         file_group_box.addWidget(rem_btn)
         file_group_box.addWidget(file_icon_img_box)
@@ -484,8 +499,8 @@ class DocWriter(QWidget):
 
         self.file_vbox.addLayout(file_group_box)
         self.file_vbox.setAlignment(Qt.AlignTop)
-
-        self.ms_loaded_file_label[filename] = (rem_btn, file_icon_img_box, file_label)
+        if not header:
+            self.ms_loaded_file_label[filename] = (rem_btn, file_icon_img_box, file_label)
         return 
 
     def remove_file_list(self, filename):
@@ -564,18 +579,30 @@ class DocWriter(QWidget):
         return 
 
     def __reset(self):
+        buttonReply = QMessageBox.information(
+                                            self, self.init_alert_title, self.init_alert_msg, 
+                                            QMessageBox.Yes | QMessageBox.Cancel
+                                            )
+        if buttonReply == QMessageBox.Cancel:
+            return 
         self.log_view.clear()
-        
+        self.add_log(self.log_comment, 'black')
+
         for w in self.groupbox.findChildren(QPushButton):
             w.deleteLater()
         for w in self.groupbox.findChildren(QLineEdit):
             w.deleteLater()
         for w in self.groupbox.findChildren(QPlainTextEdit):
             w.deleteLater()
-        for w in self.file_workspace.findChildren(QLabel):
-            w.deleteLater()
-        for w in self.file_workspace.findChildren(QPushButton):
-            w.deleteLater()
+
+        # for w in self.file_workspace.findChildren(QLabel):
+        #     w.deleteLater()
+        # for w in self.file_workspace.findChildren(QPushButton):
+        #     w.deleteLater()
+        
+        for fname in self.ms_loaded_file_label.keys():
+            for k in self.ms_loaded_file_label[fname]:
+                self.file_vbox.removeWidget(k)
 
         self.mark_num = 0
         self.ms_loaded_file_label = {}
@@ -585,12 +612,16 @@ class DocWriter(QWidget):
         self.target_path_box.setText('')
         return 
 
-    def file_work_result(self, filename, done = True):
+    def file_work_result(self, filename, done = False):
         if not done:
             return f'''{filename} -> 작업 실패'''
         return f'''{filename} -> 작업 성공'''
 
     def __run(self):
+        print(self.ms_loaded_file_label.keys())
+        if not self.ms_loaded_file_label.keys():
+            self.add_log(self.no_file_input, 'red')
+            return 
         if self.mark_num == 0:
             self.add_log(self.no_mark_input, 'red')
             return 
@@ -602,11 +633,12 @@ class DocWriter(QWidget):
         for mark_number in range(1, self.mark_num + 1):
             print(self.mark_obj_dict[mark_number][1].text(), self.mark_obj_dict[mark_number][2].toPlainText())
             if not self.mark_obj_dict[mark_number][1].text() or not self.mark_obj_dict[mark_number][2].toPlainText():
-                self.add_log(self.no_mark_input, 'red')
+                self.add_log(self.not_enough_mark_value, 'red')
                 return 
             lb_name = self.mark_obj_dict[mark_number][1].text()
             lb_value = self.mark_obj_dict[mark_number][2].toPlainText()
-            mark_dict[mark_number] = (lb_name, lb_value)
+            mark_dict[mark_number] = (lb_value, lb_name)
+            print(mark_number)
             # print(lb_name.text(), lb_value.toPlainText())
         
         ret = self.amc.run(list(self.ms_loaded_file_label.keys()), mark_dict, self.output_target_path)
@@ -615,7 +647,7 @@ class DocWriter(QWidget):
             if log_info[1] == 0: # success
                 self.add_log(self.file_work_result(log_info[0], True), 'blue')
             else:
-                self.add_log(self.file_work_result(log_info[0]), 'red')
+                self.add_log(self.file_work_result(log_info[0], False), 'red')
         return 
 
     def __show_our_logo_dynamic(self):
@@ -640,13 +672,8 @@ if __name__ == '__main__':
 - xlsx 말고 xls 에서도 작업 가능한지?
 
 
-- 초기화 확인
+-  작업 실패하는 경우는? -> mark가 아예 없어도 실패하는가?
 - 이스터에그
-- mark 헤더
-- 실행 존나 크게
-- 파일 불러오기 아래로
-- 파일불러오기 -> 파일명, 삭제
-
 
 
 self.btn_default_style = '''background-color: white;
