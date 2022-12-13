@@ -8,12 +8,20 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QWidget, QDesktopWidget, QApplication, QGridLayout, QLabel, QLineEdit, QTextEdit
-# import os
+import os
 import time
 import webbrowser
 # import datetime 
 # from PyQt5 import uic
 from methods import msAuto
+
+def resource_path(relative_path):
+    try:
+        # PyInstaller에 의해 임시폴더에서 실행될 경우 임시폴더로 접근하는 함수
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath("./")
+    return os.path.join(base_path, relative_path)
 
 class Worker(QThread):
     def __init__(self, parents):
@@ -164,7 +172,8 @@ class DocWriter(QWidget):
         self.btn_default_style = '''
                                 '''
         self.run_btn_style = '''font-size : 35px;
-                            font-weight : 900;
+                                font-weight : 900;
+                                font-family: Samsung Sharp Sans Bold;
                             '''
         self.sub_btn_style = '''
                             '''
@@ -205,7 +214,7 @@ class DocWriter(QWidget):
 
     def initGUI(self): # main user interface 
         self.setWindowTitle(self.title) #GUI Title
-        self.setWindowIcon(QIcon(self.img_path + self.logo_file)) #set Icon File, 16x16, PNG file
+        self.setWindowIcon(QIcon(resource_path(self.img_path + self.logo_file))) #set Icon File, 16x16, PNG file
         self.setStyleSheet(f"background-color:{self.gui_background_color};") 
 
         self.grid = QGridLayout()
@@ -321,9 +330,9 @@ class DocWriter(QWidget):
 
         run_btn = QPushButton(self)
         run_btn.setText(self.run_text)
+        # run_btn.setFont(QFont(self.title_font_name, 35))
         run_btn.setStyleSheet(self.run_btn_style)
         run_btn.clicked.connect(self.__run)
-        run_btn.setFont(self.general_font)
         run_btn.setFixedHeight(self.run_btn_height)
         self.grid.addWidget(run_btn, 9, 7, 2, 3, alignment=Qt.AlignTop)
 
@@ -454,9 +463,11 @@ class DocWriter(QWidget):
         file_group_box = QHBoxLayout()
         if not header:
             if "xls" in filename.split(".")[-1]:
-                file_icon_img = QPixmap(self.img_path + self.excel_icon_filename).scaled(self.file_list_icon_width, self.file_list_height)
+                # file_icon_img = QPixmap(self.img_path + self.excel_icon_filename).scaled(self.file_list_icon_width, self.file_list_height)
+                file_icon_img = QPixmap(resource_path(self.img_path + self.excel_icon_filename)).scaled(self.file_list_icon_width, self.file_list_height)
+                
             elif "doc" in filename.split(".")[-1]:
-                file_icon_img = QPixmap(self.img_path + self.docs_icon_filename).scaled(self.file_list_icon_width, self.file_list_height)
+                file_icon_img = QPixmap(resource_path(self.img_path + self.docs_icon_filename)).scaled(self.file_list_icon_width, self.file_list_height)
         
         file_icon_img_box = QLabel()
         
@@ -491,7 +502,7 @@ class DocWriter(QWidget):
             file_label.setText(filename)
             file_label.setStyleSheet(self.no_border)
 
-        file_label.setFixedWidth(740)
+        file_label.setFixedWidth(720)
         
         file_group_box.addWidget(rem_btn)
         file_group_box.addWidget(file_icon_img_box)
@@ -672,8 +683,7 @@ if __name__ == '__main__':
 - xlsx 말고 xls 에서도 작업 가능한지?
 
 
--  작업 실패하는 경우는? -> mark가 아예 없어도 실패하는가?
-- 이스터에그
+- pyinstaller -w -F --add-data='img/*.png;img'  --paths=D:\codeSet\pythonTest\usefulThings\libs  .\docWriter.py
 
 
 self.btn_default_style = '''background-color: white;

@@ -98,22 +98,25 @@ class ReadWriteExecl:
         
 
     def write_mark(self,dict_mark,path):
-        try:
+        # try:
             wb = self.excel.Workbooks.Add() #엑셀 프로그램에 Workbook 추가(객체 설정)
             ws = wb.Worksheets("sheet1")
             count = 2
             for key in dict_mark.keys():
-                ws.Cells(count,1).Value = key
-                ws.Cells(count,2).Value = dict_mark[key][0]
-                ws.Cells(count,3).Value = dict_mark[key][1]
+                if not key == None:
+                    ws.Cells(count,1).Value = '\''+str(key)
+                if not dict_mark[key][0] == None:
+                    ws.Cells(count,2).Value = '\''+str(dict_mark[key][0])
+                if not dict_mark[key][1] == None:
+                    ws.Cells(count,3).Value = '\''+str(dict_mark[key][1])
                 count = count+1
             ws.Cells(1,1).Value = "total"
-            ws.Cells(1,2).Value = count - 2
+            ws.Cells(1,2).Value = '\''+str(count - 2)
             wb.SaveAs(path)
             wb.Close()
             return 0
-        except:
-            return -1
+        # except:
+        #     return -1
 
 
 ##################################public func###########################################
