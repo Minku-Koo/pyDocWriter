@@ -152,7 +152,7 @@ class DocWriter(QWidget):
 
         self.output_target_path = ''
 
-        self.help_link_url = "https://www.naver.com/"
+        self.help_link_url = "https://lndhub.samsung.com/lndhub/blog/techBlogDetail/AYULHBmkGmZgAcLt?type=Blog"
         self.our_logo_link_url = 'https://html-color-codes.info/Korean/'
         
         self.scroll_flag = True
@@ -202,7 +202,7 @@ class DocWriter(QWidget):
         ##################################################
         ############# Call Class #########################
         self.amc = msAuto.AutoMarkerChanger()
-        self.excel_export_filename = '/Output_MsOfficeMerger.xlsx'
+        self.excel_export_filename = 'Output_MsOfficeMerger.xlsx'
 
         self.title_font = QFont(self.title_font_name, 35)
         self.general_font = QFont(self.title_font_name)
@@ -549,10 +549,12 @@ class DocWriter(QWidget):
 
 
     def mark_export_excel(self):
-        export_path = QFileDialog.getExistingDirectory(self, 'Select Directory', './')
+        export_path, _ = QFileDialog.getSaveFileName(self, 'Select Directory', 
+                                                f'./{self.excel_export_filename}', 
+                                                'Excel (*.xlsx)')
         if not export_path:
             return 
-        export_path += self.excel_export_filename
+        # export_path += self.excel_export_filename
         export_path = export_path.replace("/", "\\")
         export_dict = {}
         if self.mark_num == 0:
