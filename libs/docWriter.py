@@ -135,8 +135,8 @@ class DocWriter(QWidget):
         self.help_btn_name = '도움말'
         self.doc_load_name = "파일 불러오기"
         self.target_path_btn_name = '저장 폴더 지정'
-        self.excel_import_name = '불러오기'
-        self.excel_export_name = '내보내기'
+        self.excel_import_name = '형식 불러오기'
+        self.excel_export_name = '형식 내보내기'
         self.run_text = '실   행'
         self.mark_rem_btn_text = '-'
         self.mark_add_btn_text = '+'
@@ -672,54 +672,3 @@ if __name__ == '__main__':
     ex = DocWriter()
     sys.exit(app.exec_())
 
-"""'''
-### 에러 사양
-- import 시, 형식이 갖추어지지 않은 엑셀일 경우 (중요!!)
-    - 1열 숫자 오름차순 맞는지
-
-### 수정 사항
-- import/export 파일 열지 않도록
-- class 호출하는 순간, 켜져있던 ms 문서들 다 종료됨 ;;
-- xlsx 말고 xls 에서도 작업 가능한지?
-
-
-- pyinstaller -w -F --add-data='img/*.png;img'  --paths=D:\codeSet\pythonTest\usefulThings\libs  .\docWriter.py
-
-
-self.btn_default_style = '''background-color: white;
-                                    height: 25px;
-                                    border-radius: 4px;
-
-                                    color: #000000;
-                                    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, 
-                                    stop:0 #E6E6E6, 
-                                    stop:1 #BDBDBD);
-                                '''
-        self.run_btn_style = '''
-                            background-color: white;
-                            border-radius: 12px;
-                            font-size : 35px;
-                            font-weight : 900;
-                            color: #FA5858;
-
-                            color: white;
-                            background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1,
-                            stop:0 #819FF7, 
-                            stop:1 #0431B4);
-                            '''
-        self.sub_btn_style = '''
-                            height: 24px;
-                            border-radius: 0px;
-
-                            color: #6E6E6E;
-                            background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1,
-                            stop:0 #FAFAFA, 
-                            stop:1 #D8D8D8);
-                            '''
-
-        self.mark_header_style = '''
-                            border-radius: 2px;
-                            color : #2E2E2E;
-                            background-color: #E6E6E6;
-                            '''
-"""
