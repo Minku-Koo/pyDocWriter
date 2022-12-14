@@ -108,6 +108,8 @@ class ShowWe(QThread):
 class DocWriter(QWidget):
     def __init__(self):
         super().__init__()
+
+        self.version = 1.0
         
         ##################################################
         ############# Size Space #########################
@@ -190,11 +192,11 @@ class DocWriter(QWidget):
         self.mark_naming = 'MOM'
         self.log_comment = """이곳에 작업 로그가 보여집니다."""
         self.mark_value_not_enough = '''모든 칸을 채워주세요'''
-        self.no_mark_input = f'''하나 이상의 {self.mark_naming}가 입력되어야 합니다'''
+        self.no_mark_input = f'''하나 이상의 {self.mark_naming}이 입력되어야 합니다'''
         self.target_not_exist = '''결과 저장 폴더를 지정해주세요'''
         self.import_success = '''엑셀 파일에서 Mark 데이터 불러오기 성공'''
         self.export_success = f'''{self.mark_naming} 데이터 엑셀로 내보내기 성공'''
-        self.file_loaded_log = '''파일 업로드이 정상적으로 업로드 되었습니다'''
+        self.file_loaded_log = '''파일이 정상적으로 업로드 되었습니다'''
         self.no_file_input = '''1개 이상의 파일을 업로드해주세요.'''
         self.not_enough_mark_value = f'''입력되지 않은 {self.mark_naming}가 있습니다.'''
         self.log_color = {'red':"FF0000", 'blue':'2E2EFE', 'black':'000000'}
@@ -213,7 +215,7 @@ class DocWriter(QWidget):
         return 
 
     def initGUI(self): # main user interface 
-        self.setWindowTitle(self.title) #GUI Title
+        self.setWindowTitle(self.title + f"  ver {self.version}") #GUI Title
         self.setWindowIcon(QIcon(resource_path(self.img_path + self.logo_file))) #set Icon File, 16x16, PNG file
         self.setStyleSheet(f"background-color:{self.gui_background_color};") 
 
@@ -303,7 +305,10 @@ class DocWriter(QWidget):
         self.target_path_box.setFixedHeight(25)
         self.grid.addWidget(self.target_path_box, 10, 1, 1, 4, alignment=Qt.AlignTop)
 
-        
+        # self.version_box = QLabel(self)
+        # self.version_box.setText(f"Ver {self.version}")
+        # self.grid.addWidget(self.version_box, 11, 1, 1, 1, alignment=Qt.AlignLeft)
+
         self.groupbox.setLayout(self.mark_vbox)
         self.group_scroll_area.setWidget(self.groupbox)
 
