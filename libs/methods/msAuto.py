@@ -19,7 +19,7 @@ class ReplaceToMaker:
         self.word.Visible = False
 
     def ReplaceToText(self, path, dict_mark, target_path=""):
-        if(path[-4:] == "xlsx"):
+        if(path[-4:] == "xlsx" or path[-3:] == "xls"):
             ret =  self.__search_replace_all_excel(path,dict_mark,target_path)
             return ret
         elif(path[-4:] == "docx" or path[-3:] == "doc"):
@@ -98,7 +98,7 @@ class ReadWriteExecl:
         
 
     def write_mark(self,dict_mark,path):
-        # try:
+        try:
             wb = self.excel.Workbooks.Add() #엑셀 프로그램에 Workbook 추가(객체 설정)
             ws = wb.Worksheets("sheet1")
             count = 2
@@ -115,8 +115,8 @@ class ReadWriteExecl:
             wb.SaveAs(path)
             wb.Close()
             return 0
-        # except:
-        #     return -1
+        except:
+            return -1
 
 
 ##################################public func###########################################

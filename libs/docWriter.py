@@ -566,7 +566,6 @@ class DocWriter(QWidget):
             self.add_log(self.no_mark_input, 'red')
             return 
         for mark_number in range(1, self.mark_num + 1):
-            print(self.mark_obj_dict[mark_number])
             lb_name_text = self.mark_obj_dict[mark_number][1].text()
             lb_value_text = self.mark_obj_dict[mark_number][2].toPlainText()
             export_dict[mark_number] = (lb_name_text, lb_value_text)
@@ -636,7 +635,6 @@ class DocWriter(QWidget):
         return f'''{filename} -> 작업 성공'''
 
     def __run(self):
-        print(self.ms_loaded_file_label.keys())
         if not self.ms_loaded_file_label.keys():
             self.add_log(self.no_file_input, 'red')
             return 
@@ -649,11 +647,10 @@ class DocWriter(QWidget):
 
         mark_dict = {}
         for mark_number in range(1, self.mark_num + 1):
-            print(self.mark_obj_dict[mark_number][1].text(), self.mark_obj_dict[mark_number][2].toPlainText())
-            if not self.mark_obj_dict[mark_number][1].text() or not self.mark_obj_dict[mark_number][2].toPlainText():
+            if not self.mark_obj_dict[mark_number][2].toPlainText():
                 self.add_log(self.not_enough_mark_value, 'red')
                 return 
-            lb_name = self.mark_obj_dict[mark_number][1].text()
+            lb_name  = self.mark_obj_dict[mark_number][1].text()
             lb_value = self.mark_obj_dict[mark_number][2].toPlainText()
             mark_dict[mark_number] = (lb_value, lb_name)
             print(mark_number)
