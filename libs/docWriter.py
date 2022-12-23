@@ -189,16 +189,16 @@ class DocWriter(QWidget):
                                     '''
         ##################################################
         ############# Log ################################
-        self.mark_naming = 'MOM'
+        self.mark_naming = ['{@#mark', '@}']
         self.log_comment = """이곳에 작업 로그가 보여집니다."""
         self.mark_value_not_enough = '''모든 칸을 채워주세요'''
-        self.no_mark_input = f'''하나 이상의 {self.mark_naming}이 입력되어야 합니다'''
+        self.no_mark_input = f'''하나 이상의 행이 입력되어야 합니다'''
         self.target_not_exist = '''결과 저장 폴더를 지정해주세요'''
         self.import_success = '''엑셀 파일에서 Mark 데이터 불러오기 성공'''
-        self.export_success = f'''{self.mark_naming} 데이터 엑셀로 내보내기 성공'''
+        self.export_success = f'''입력 데이터 엑셀로 내보내기 성공'''
         self.file_loaded_log = '''파일이 정상적으로 업로드 되었습니다'''
         self.no_file_input = '''1개 이상의 파일을 업로드해주세요.'''
-        self.not_enough_mark_value = f'''입력되지 않은 {self.mark_naming}가 있습니다.'''
+        self.not_enough_mark_value = f'''입력되지 않은 행이 있습니다.'''
         self.log_color = {'red':"FF0000", 'blue':'2E2EFE', 'black':'000000'}
 
         ##################################################
@@ -377,9 +377,9 @@ class DocWriter(QWidget):
         else:
             mark_line_num = QPushButton(self)
             if mark_num == 0:
-                mark_line_num.setText(f"{self.mark_naming}{self.mark_num}")
+                mark_line_num.setText(f"{self.mark_naming[0]}{self.mark_num}{self.mark_naming[1]}")
             else:
-                mark_line_num.setText(f"{self.mark_naming}{mark_num}")
+                mark_line_num.setText(f"{self.mark_naming[0]}{mark_num}{self.mark_naming[1]}")
             
             mark_line_num.setStyleSheet(self.mark_header_style)
         mark_line_num.setFixedHeight(self.mark_input_height)

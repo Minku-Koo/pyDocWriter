@@ -32,7 +32,7 @@ class ReplaceToMaker:
             doc = self.word.Documents.Open(path)
             maintext = self.word.ActiveDocument.StoryRanges(1)
             for mark in dict_mark.keys():
-                find_str = "{@#mark@"+str(mark)+"}"
+                find_str = "{@#mark"+str(mark)+"@}"
                 replace_str = dict_mark[mark][0]
                 a = maintext.Text.count(find_str) # 본문 중 찾을 단어의 수를 센다.
 
@@ -58,7 +58,7 @@ class ReplaceToMaker:
         try:
             workbook = self.excel.Workbooks.Open(path)
             for mark in dict_mark.keys():
-                find_str = "{@#mark@"+str(mark)+"}"
+                find_str = "{@#mark"+str(mark)+"@}"
                 replace_str = dict_mark[mark][0]
                 for worksheet in workbook.Worksheets:
                     cell = worksheet.UsedRange.Find(find_str)
