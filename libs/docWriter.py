@@ -683,3 +683,8 @@ if __name__ == '__main__':
     ex = DocWriter()
     sys.exit(app.exec_())
 
+'''
+
+pyinstaller -w -F --add-data='img/*.png;img'  
+--paths=D:\codeSet\pythonTest\usefulThings\libs  .\docWriter.py
+'''
