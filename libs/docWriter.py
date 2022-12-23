@@ -215,7 +215,7 @@ class DocWriter(QWidget):
         return 
 
     def initGUI(self): # main user interface 
-        self.setWindowTitle(self.title + f"  ver {self.version}") #GUI Title
+        self.setWindowTitle(self.title) #GUI Title
         self.setWindowIcon(QIcon(resource_path(self.img_path + self.logo_file))) #set Icon File, 16x16, PNG file
         self.setStyleSheet(f"background-color:{self.gui_background_color};") 
 
@@ -253,6 +253,11 @@ class DocWriter(QWidget):
         doc_load_btn.setStyleSheet(self.btn_default_style)
         doc_load_btn.clicked.connect(self.load_file_list)
         self.grid.addWidget(doc_load_btn, 3, 0, 1, 1)
+
+        vlabel = QLabel(self)
+        vlabel.setText(f" version {self.version}")
+        vlabel.setStyleSheet("color : #BDBDBD;")
+        self.grid.addWidget(vlabel, 0, 0, 1, 1 , alignment=Qt.AlignTop) #
 
         self.create_file_list_label('', header = True)
 
@@ -292,17 +297,20 @@ class DocWriter(QWidget):
         mark_plus_btn.clicked.connect(self.generate_mark)
         self.grid.addWidget(mark_plus_btn, 9, 4, 1, 1)
 
+        target_box_height = 30
+
         self.target_btn = QPushButton(self)
         self.target_btn.setEnabled(True)
         self.target_btn.setText(self.target_path_btn_name)
         self.target_btn.setStyleSheet(self.btn_default_style)
         self.target_btn.clicked.connect(self.set_output_target_path)
+        self.target_btn.setFixedHeight(target_box_height)
         self.grid.addWidget(self.target_btn, 10, 0, 1, 1, alignment=Qt.AlignTop)
 
         self.target_path_box = QLabel(self)
         self.target_path_box.setStyleSheet(self.simple_border_style)
         self.target_path_box.setText('')
-        self.target_path_box.setFixedHeight(25)
+        self.target_path_box.setFixedHeight(target_box_height)
         self.grid.addWidget(self.target_path_box, 10, 1, 1, 4, alignment=Qt.AlignTop)
 
         # self.version_box = QLabel(self)
@@ -351,6 +359,7 @@ class DocWriter(QWidget):
         self.grid.addWidget(logo_img_box, 10, 9, 1, 1, alignment=Qt.AlignRight)
         '''
 
+
         return 
 
     # + click event
@@ -373,7 +382,6 @@ class DocWriter(QWidget):
             mark_line_num.setText('번호')
             mark_line_num.setStyleSheet(self.header_style_sheet)
             mark_line_num.setAlignment(Qt.AlignCenter)
-            # mark_line_num.setStyleSheet(self.mark_header_style)
         else:
             mark_line_num = QPushButton(self)
             if mark_num == 0:
@@ -381,9 +389,8 @@ class DocWriter(QWidget):
             else:
                 mark_line_num.setText(f"{self.mark_naming[0]}{mark_num}{self.mark_naming[1]}")
             
-            mark_line_num.setStyleSheet(self.mark_header_style)
         mark_line_num.setFixedHeight(self.mark_input_height)
-        mark_line_num.setFixedWidth(100)
+        mark_line_num.setFixedWidth(90)
         mark_line_num.setEnabled(False)
 
         mark_line_name = QLineEdit()
@@ -399,7 +406,7 @@ class DocWriter(QWidget):
             mark_line_name = QLineEdit(self)
             if mark_name:
                 mark_line_name.setText(mark_name)
-        mark_line_name.setFixedWidth(250)
+        mark_line_name.setFixedWidth(240)
         mark_line_name.setFixedHeight(self.mark_input_height)
         
 
@@ -414,7 +421,7 @@ class DocWriter(QWidget):
             if mark_val:
                 mark_line_value.setPlainText(mark_val)
 
-        mark_line_value.setFixedWidth(440)
+        mark_line_value.setFixedWidth(430)
         mark_line_value.setFixedHeight(self.mark_input_height)
 
         self.mark_box.addWidget(mark_line_num)
@@ -507,7 +514,7 @@ class DocWriter(QWidget):
             file_label.setText(filename)
             file_label.setStyleSheet(self.no_border)
 
-        file_label.setFixedWidth(720)
+        file_label.setFixedWidth(700)
         
         file_group_box.addWidget(rem_btn)
         file_group_box.addWidget(file_icon_img_box)
