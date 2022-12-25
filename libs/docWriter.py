@@ -11,10 +11,10 @@ from PyQt5.QtWidgets import QWidget, QDesktopWidget, QApplication, QGridLayout, 
 import os
 import time
 import webbrowser
-# import datetime 
-# from PyQt5 import uic
 from methods import msAuto
 
+# pyintall -> 상대경로를 통해 이미지 파일 가져오기 위한 함수
+# 모든 경로 표현에서 이 함수 사용 필요!
 def resource_path(relative_path):
     try:
         # PyInstaller에 의해 임시폴더에서 실행될 경우 임시폴더로 접근하는 함수
@@ -155,7 +155,6 @@ class DocWriter(QWidget):
         self.output_target_path = ''
 
         self.help_link_url = "https://lndhub.samsung.com/lndhub/blog/techBlogDetail/AYULHBmkGmZgAcLt?type=Blog"
-        self.our_logo_link_url = 'https://html-color-codes.info/Korean/'
         
         self.scroll_flag = True
         self.init_run_flog = True
@@ -233,12 +232,10 @@ class DocWriter(QWidget):
         title = QLabel(self.title, self)
         title.setFont(self.title_font)
         title.setAlignment(Qt.AlignCenter)
-        # title.setStyleSheet('border-style:solid;border-color:black;border-width:1px;')
         self.grid.addWidget(title, 0, 2, 1, 3)
         
 
         self.file_workspace = QGroupBox(self)
-        # self.file_workspace.setStyleSheet(self.simple_border_style)
         self.file_scroll_area = QScrollArea(self)
         self.file_scroll_area.setWidgetResizable(True)
         self.grid.addWidget(self.file_scroll_area, 1, 0, 2, 5)
@@ -257,7 +254,7 @@ class DocWriter(QWidget):
         vlabel = QLabel(self)
         vlabel.setText(f" version {self.version}")
         vlabel.setStyleSheet("color : #BDBDBD;")
-        self.grid.addWidget(vlabel, 0, 0, 1, 1 , alignment=Qt.AlignTop) #
+        self.grid.addWidget(vlabel, 0, 0, 1, 1 , alignment=Qt.AlignTop)
 
         self.create_file_list_label('', header = True)
 
@@ -313,10 +310,6 @@ class DocWriter(QWidget):
         self.target_path_box.setFixedHeight(target_box_height)
         self.grid.addWidget(self.target_path_box, 10, 1, 1, 4, alignment=Qt.AlignTop)
 
-        # self.version_box = QLabel(self)
-        # self.version_box.setText(f"Ver {self.version}")
-        # self.grid.addWidget(self.version_box, 11, 1, 1, 1, alignment=Qt.AlignLeft)
-
         self.groupbox.setLayout(self.mark_vbox)
         self.group_scroll_area.setWidget(self.groupbox)
 
@@ -343,26 +336,14 @@ class DocWriter(QWidget):
 
         run_btn = QPushButton(self)
         run_btn.setText(self.run_text)
-        # run_btn.setFont(QFont(self.title_font_name, 35))
         run_btn.setStyleSheet(self.run_btn_style)
         run_btn.clicked.connect(self.__run)
         run_btn.setFixedHeight(self.run_btn_height)
         self.grid.addWidget(run_btn, 9, 7, 2, 3, alignment=Qt.AlignTop)
 
-        '''
-        logo_img = QIcon(self.img_path + self.logo_file)
-        logo_img_box = QPushButton()
-        logo_img_box.setIcon(logo_img)
-        logo_img_box.clicked.connect(lambda: self.open_webbrowser(self.help_link_url)) 
-        logo_img_box.setStyleSheet(self.no_border)
-        logo_img_box.setIconSize(QSize(self.our_logo_btn_size, self.our_logo_btn_size)) 
-        self.grid.addWidget(logo_img_box, 10, 9, 1, 1, alignment=Qt.AlignRight)
-        '''
-
-
         return 
 
-    # + click event
+    # add mark
     def generate_mark(self, header = False):
         if not header:
             self.mark_num += 1
@@ -374,9 +355,11 @@ class DocWriter(QWidget):
 
         return 
 
+    # create mark
     def create_mark(self, mark_num = 0, mark_name = '', mark_val = '', header = False):
         self.mark_box = QHBoxLayout()
 
+        # mark number 드래그 가능하게 하면 좋겠음!!
         if header:
             mark_line_num = QLabel(self)
             mark_line_num.setText('번호')
@@ -394,14 +377,11 @@ class DocWriter(QWidget):
         mark_line_num.setEnabled(False)
 
         mark_line_name = QLineEdit()
-        # mark_line_name = QLabel()
         if header:
             mark_line_name = QLabel(self)
             mark_line_name.setText('설명')
             mark_line_name.setAlignment(Qt.AlignCenter)
             mark_line_name.setStyleSheet(self.header_style_sheet)
-            # mark_line_name.setFixedWidth(160)
-            # mark_line_name.setFixedHeight(self.mark_input_height)
         else:
             mark_line_name = QLineEdit(self)
             if mark_name:
@@ -431,13 +411,9 @@ class DocWriter(QWidget):
         self.mark_vbox.addLayout(self.mark_box)
         self.mark_box.setAlignment(Qt.AlignTop)
         if header:
-            # self.mark_box.setAlignment(Qt.AlignTop)
             self.mark_vbox.setAlignment(Qt.AlignTop)
         else:
-            # self.mark_box.setAlignment(Qt.AlignTop)
             self.mark_vbox.setAlignment(Qt.AlignTop)
-            # self.groupbox.setAlignment(Qt.AlignTop)
-            pass
 
         if not header:
             value_tp = (mark_line_num, mark_line_name, mark_line_value)
@@ -475,12 +451,12 @@ class DocWriter(QWidget):
         file_group_box = QHBoxLayout()
         if not header:
             if "xls" in filename.split(".")[-1]:
-                # file_icon_img = QPixmap(self.img_path + self.excel_icon_filename).scaled(self.file_list_icon_width, self.file_list_height)
-                file_icon_img = QPixmap(resource_path(self.img_path + self.excel_icon_filename)).scaled(self.file_list_icon_width, self.file_list_height)
+                file_icon_img_path = resource_path(self.img_path + self.excel_icon_filename)
                 
             elif "doc" in filename.split(".")[-1]:
-                file_icon_img = QPixmap(resource_path(self.img_path + self.docs_icon_filename)).scaled(self.file_list_icon_width, self.file_list_height)
-        
+                file_icon_img_path = resource_path(self.img_path + self.excel_icon_filename)
+                
+        file_icon_img = QPixmap(file_icon_img_path).scaled(self.file_list_icon_width, self.file_list_height)
         file_icon_img_box = QLabel()
         
         if header:
@@ -549,12 +525,6 @@ class DocWriter(QWidget):
             self.log_view.clear()
         #     self.start_logo_view_over = False
 
-        if color != 'black':
-            # if self.init_run_flog and not self.start_logo_view_over:
-            #     self.log_view.clear()
-            #     self.start_logo_view_over = False
-            #     self.init_run_flog = False
-            pass
 
         self.log_view.append(f'<span style=\"color:#{self.log_color[color]};\">{text}</span>')
         return 
@@ -566,7 +536,7 @@ class DocWriter(QWidget):
                                                 'Excel (*.xlsx)')
         if not export_path:
             return 
-        # export_path += self.excel_export_filename
+            
         export_path = export_path.replace("/", "\\")
         export_dict = {}
         if self.mark_num == 0:
@@ -618,12 +588,7 @@ class DocWriter(QWidget):
             w.deleteLater()
         for w in self.groupbox.findChildren(QPlainTextEdit):
             w.deleteLater()
-
-        # for w in self.file_workspace.findChildren(QLabel):
-        #     w.deleteLater()
-        # for w in self.file_workspace.findChildren(QPushButton):
-        #     w.deleteLater()
-        
+            
         for fname in self.ms_loaded_file_label.keys():
             for k in self.ms_loaded_file_label[fname]:
                 self.file_vbox.removeWidget(k)
@@ -678,13 +643,12 @@ class DocWriter(QWidget):
         show_we.start()
         return 
 
+
+    # pyinstaller -w -F --add-data='img/*.png;img'  
+    # --paths=D:\codeSet\pythonTest\usefulThings\libs  .\docWriter.py
+    
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = DocWriter()
     sys.exit(app.exec_())
-
-'''
-
-pyinstaller -w -F --add-data='img/*.png;img'  
---paths=D:\codeSet\pythonTest\usefulThings\libs  .\docWriter.py
-'''
