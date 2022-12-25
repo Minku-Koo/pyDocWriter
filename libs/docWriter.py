@@ -13,6 +13,30 @@ import time
 import webbrowser
 from methods import msAuto
 
+our_init_logo_view = '''
+■■■■■■▒■■■■■■▒▒■■■■■■▒■■■■■■
+■■■■■■▒■■■■■■▒▒■■■■■■▒■■■■■■
+■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
+■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
+■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
+■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
+■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
+■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
+■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
+■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
+■■■■■■▒■■■■■■▒▒■■■■■■▒■□□□□■
+■■■■■■▒■■■■■■▒▒■■■■■■▒■□□□□■
+□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
+□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
+□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
+□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
+□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
+□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
+□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
+■■■■■■▒■■■■■■▒▒■■■■■■▒■■■■■■
+■■■■■■▒■■■■■■▒▒■■■■■■▒■■■■■■
+'''
+
 # pyintall -> 상대경로를 통해 이미지 파일 가져오기 위한 함수
 # 모든 경로 표현에서 이 함수 사용 필요!
 def resource_path(relative_path):
@@ -56,42 +80,21 @@ class ShowWe(QThread):
         self.parents = parents
         self.__running = True
         self.num = 0
-        self.our_init_logo_view = '''
-■■■■■■    ■■■■■■    ■■■■■■    ■■■■■■
-■■■■■■    ■■■■■■    ■■■■■■    ■■■■■■
-■          ■    ■                 ■                ■          ■
-■          ■    ■                 ■                ■          ■
-■          ■    ■                 ■                ■          ■
-■          ■    ■                 ■                ■          ■
-■          ■    ■                 ■                ■          ■
-■          ■    ■                 ■                ■          ■
-■          ■    ■                 ■                ■          ■
-■          ■    ■                 ■                ■          ■
-■          ■    ■                 ■                ■          ■
-■■■■■■    ■■■■■■    ■■■■■■    ■          ■
-■■■■■■    ■■■■■■    ■■■■■■    ■          ■
-          ■■              ■■              ■■    ■          ■
-          ■■              ■■              ■■    ■          ■
-          ■■              ■■              ■■    ■          ■
-          ■■              ■■              ■■    ■          ■
-          ■■              ■■              ■■    ■          ■
-          ■■              ■■              ■■    ■          ■
-          ■■              ■■              ■■    ■          ■
-■■■■■■    ■■■■■■    ■■■■■■    ■■■■■■ 
-■■■■■■    ■■■■■■    ■■■■■■    ■■■■■■ 
-'''
-        self.show_log = self.our_init_logo_view.split("\n")
+        
+        self.show_log = our_init_logo_view.split("\n")
         
     def run(self):
         while self.__running:
             if self.parents.init_run_flog:
-                time.sleep(0.08)
+                time.sleep(0.03)
                 self.__show()
             else:
                 self.stop()
 
     def __show(self):
+        # self.parents.add_log(self.our_init_logo_view, 'black')
         self.parents.add_log(self.show_log[self.num], 'black')
+        print(self.show_log[self.num])
         self.num += 1
         if len(self.show_log) == self.num:
             self.parents.init_run_flog = False
@@ -209,7 +212,7 @@ class DocWriter(QWidget):
         self.general_font = QFont(self.title_font_name)
         
         self.initGUI()
-        # self.__show_our_logo_dynamic()
+        self.__show_our_logo_dynamic()
 
         return 
 
@@ -261,6 +264,8 @@ class DocWriter(QWidget):
         return 
 
     def guiControlPannel(self):
+
+
         self.groupbox = QGroupBox(self)
         self.group_scroll_area = QScrollArea(self)
         self.group_scroll_area.setWidgetResizable(True)
@@ -359,7 +364,6 @@ class DocWriter(QWidget):
     def create_mark(self, mark_num = 0, mark_name = '', mark_val = '', header = False):
         self.mark_box = QHBoxLayout()
 
-        # mark number 드래그 가능하게 하면 좋겠음!!
         if header:
             mark_line_num = QLabel(self)
             mark_line_num.setText('번호')
@@ -410,10 +414,10 @@ class DocWriter(QWidget):
 
         self.mark_vbox.addLayout(self.mark_box)
         self.mark_box.setAlignment(Qt.AlignTop)
-        if header:
-            self.mark_vbox.setAlignment(Qt.AlignTop)
-        else:
-            self.mark_vbox.setAlignment(Qt.AlignTop)
+        # if header:
+        #     self.mark_vbox.setAlignment(Qt.AlignTop)
+        # else:
+        #     self.mark_vbox.setAlignment(Qt.AlignTop)
 
         if not header:
             value_tp = (mark_line_num, mark_line_name, mark_line_value)
@@ -449,12 +453,13 @@ class DocWriter(QWidget):
 
     def create_file_list_label(self, filename, header = False):
         file_group_box = QHBoxLayout()
+        file_icon_img_path = ''
         if not header:
             if "xls" in filename.split(".")[-1]:
                 file_icon_img_path = resource_path(self.img_path + self.excel_icon_filename)
                 
             elif "doc" in filename.split(".")[-1]:
-                file_icon_img_path = resource_path(self.img_path + self.excel_icon_filename)
+                file_icon_img_path = resource_path(self.img_path + self.docs_icon_filename)
                 
         file_icon_img = QPixmap(file_icon_img_path).scaled(self.file_list_icon_width, self.file_list_height)
         file_icon_img_box = QLabel()
@@ -523,8 +528,7 @@ class DocWriter(QWidget):
     def add_log(self, text, color = 'black'):
         if self.start_logo_view_over:
             self.log_view.clear()
-        #     self.start_logo_view_over = False
-
+            self.start_logo_view_over = False
 
         self.log_view.append(f'<span style=\"color:#{self.log_color[color]};\">{text}</span>')
         return 
@@ -557,7 +561,7 @@ class DocWriter(QWidget):
         self.mark_obj_dict  = {}
         imported_file = imported_file[0].replace("/", "\\")
         mark_dict = self.amc.import_mark(imported_file)
-        print(mark_dict)
+        
         for w in self.groupbox.findChildren(QPushButton):
             w.deleteLater()
         for w in self.groupbox.findChildren(QLineEdit):
@@ -638,9 +642,17 @@ class DocWriter(QWidget):
         return 
 
     def __show_our_logo_dynamic(self):
+        self.log_view.clear()
         self.init_run_flog = True
         show_we = ShowWe(self)
         show_we.start()
+        
+        # for line in our_init_logo_view.split("\n"):
+        #     self.add_log(line, 'black')
+
+        # time.sleep(5)
+        # self.log_view.clear()
+        # self.add_log(self.log_comment, 'black')
         return 
 
 
