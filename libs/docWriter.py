@@ -94,7 +94,7 @@ class ShowWe(QThread):
     def __show(self):
         # self.parents.add_log(self.our_init_logo_view, 'black')
         self.parents.add_log(self.show_log[self.num], 'black')
-        print(self.show_log[self.num])
+        # print(self.show_log[self.num])
         self.num += 1
         if len(self.show_log) == self.num:
             self.parents.init_run_flog = False
@@ -168,22 +168,19 @@ class DocWriter(QWidget):
         self.gui_background_color = 'white'#"#FAFAFA"
         self.title_font_name = "Samsung Sharp Sans Bold"
         self.samsung_one_font = "SamsungOne 400"
-
         self.simple_border_style = 'border-style:solid;border-color:#000000;border-width:1px;'
-
         self.no_border = 'border-radius: 1px;border-width:0px; '
-        
-        self.btn_default_style = '''
-                                '''
+        self.btn_default_style = ''
         self.run_btn_style = '''font-size : 35px;
                                 font-weight : 900;
                                 font-family: Samsung Sharp Sans Bold;
                             '''
-        self.sub_btn_style = '''
-                            '''
-
-        self.mark_header_style = '''
-                            '''
+        self.mark_num_gray_style = '''
+                                font-size : 12px;
+                                border:0px solid;
+                                background-color: #E6E6E6;
+                                vertical-align: middle;
+                                '''
         self.header_style_sheet = '''
                                     border-radius: 1px;
                                     color : #2E2E2E;
@@ -264,8 +261,6 @@ class DocWriter(QWidget):
         return 
 
     def guiControlPannel(self):
-
-
         self.groupbox = QGroupBox(self)
         self.group_scroll_area = QScrollArea(self)
         self.group_scroll_area.setWidgetResizable(True)
@@ -325,13 +320,13 @@ class DocWriter(QWidget):
     def guiLogView(self):
         help_btn = QPushButton(self)
         help_btn.setText(self.help_btn_name)
-        help_btn.setStyleSheet(self.sub_btn_style)
+        # help_btn.setStyleSheet(self.sub_btn_style)
         help_btn.clicked.connect(lambda: self.open_webbrowser(self.help_link_url))
         self.grid.addWidget(help_btn, 0, 8, 1, 1, alignment=Qt.AlignBottom)
 
         init_btn = QPushButton(self)
         init_btn.setText(self.reset_btn_name)
-        init_btn.setStyleSheet(self.sub_btn_style)
+        # init_btn.setStyleSheet(self.sub_btn_style)
         init_btn.clicked.connect(self.__reset)
         self.grid.addWidget(init_btn, 0, 9, 1, 1, alignment=Qt.AlignBottom)
 
@@ -368,17 +363,19 @@ class DocWriter(QWidget):
             mark_line_num = QLabel(self)
             mark_line_num.setText('번호')
             mark_line_num.setStyleSheet(self.header_style_sheet)
-            mark_line_num.setAlignment(Qt.AlignCenter)
+            # mark_line_num.setAlignment(Qt.AlignCenter) 
         else:
-            mark_line_num = QPushButton(self)
+            mark_line_num = QTextBrowser(self) #QPushButton
             if mark_num == 0:
                 mark_line_num.setText(f"{self.mark_naming[0]}{self.mark_num}{self.mark_naming[1]}")
             else:
                 mark_line_num.setText(f"{self.mark_naming[0]}{mark_num}{self.mark_naming[1]}")
+            mark_line_num.setStyleSheet(self.mark_num_gray_style)
             
         mark_line_num.setFixedHeight(self.mark_input_height)
-        mark_line_num.setFixedWidth(90)
-        mark_line_num.setEnabled(False)
+        mark_line_num.setFixedWidth(92)
+        mark_line_num.setAlignment(Qt.AlignCenter)
+        # mark_line_num.setEnabled(False)
 
         mark_line_name = QLineEdit()
         if header:
@@ -488,7 +485,7 @@ class DocWriter(QWidget):
 
         file_label = QLabel(self)
         if header:
-            file_label.setText("파일명")
+            file_label.setText("파일 경로")
             file_label.setAlignment(Qt.AlignCenter)
             file_label.setStyleSheet(self.header_style_sheet)
         else:
@@ -643,16 +640,18 @@ class DocWriter(QWidget):
 
     def __show_our_logo_dynamic(self):
         self.log_view.clear()
-        self.init_run_flog = True
-        show_we = ShowWe(self)
-        show_we.start()
-        
-        # for line in our_init_logo_view.split("\n"):
-        #     self.add_log(line, 'black')
 
-        # time.sleep(5)
-        # self.log_view.clear()
-        # self.add_log(self.log_comment, 'black')
+        # 1)
+        for line in our_init_logo_view.split("\n"):
+            self.add_log(line, 'black')
+
+
+        # 2)
+        # show_we = ShowWe(self)
+        # show_we.start()
+
+        self.init_run_flog = True
+        self.start_logo_view_over = True
         return 
 
 
