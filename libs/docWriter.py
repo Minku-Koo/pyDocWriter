@@ -583,7 +583,7 @@ class DocWriter(QWidget):
         self.log_view.clear()
         self.add_log(self.log_comment, 'black')
 
-        for w in self.groupbox.findChildren(QPushButton):
+        for w in self.groupbox.findChildren(QTextBrowser):
             w.deleteLater()
         for w in self.groupbox.findChildren(QLineEdit):
             w.deleteLater()
