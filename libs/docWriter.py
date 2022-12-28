@@ -6,35 +6,35 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QWidget, QDesktopWidget, QApplication, QGridLayout, QLabel, QLineEdit, QTextEdit
+# from PyQt5 import QtCore
+from PyQt5.QtWidgets import QWidget, QApplication, QGridLayout, QLabel, QLineEdit #, QTextEdit
 import os
 import time
 import webbrowser
 from methods import msAuto
 
 our_init_logo_view = '''
-■■■■■■▒■■■■■■▒▒■■■■■■▒■■■■■■
-■■■■■■▒■■■■■■▒▒■■■■■■▒■■■■■■
-■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
-■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
-■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
-■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
-■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
-■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
-■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
-■□□□□■▒■□□□□□▒▒■□□□□□▒■□□□□■
-■■■■■■▒■■■■■■▒▒■■■■■■▒■□□□□■
-■■■■■■▒■■■■■■▒▒■■■■■■▒■□□□□■
-□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
-□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
-□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
-□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
-□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
-□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
-□□□□■■▒□□□□■■▒▒□□□□■■▒■□□□□■
-■■■■■■▒■■■■■■▒▒■■■■■■▒■■■■■■
-■■■■■■▒■■■■■■▒▒■■■■■■▒■■■■■■
+■■■■■■■▒■■■■■■■▒▒■■■■■■■▒■■■■■■■■
+■■■■■■■▒■■■■■■■▒▒■■■■■■■▒■■■■■■■■
+■□□□□■■▒■■□□□□□▒▒■■□□□□□▒■■□□□□■■
+■□□□□■■▒■■□□□□□▒▒■■□□□□□▒■■□□□□■■
+■□□□□■■▒■■□□□□□▒▒■■□□□□□▒■■□□□□■■
+■□□□□■■▒■■□□□□□▒▒■■□□□□□▒■■□□□□■■
+■□□□□■■▒■■□□□□□▒▒■■□□□□□▒■■□□□□■■
+■□□□□■■▒■■□□□□□▒▒■■□□□□□▒■■□□□□■■
+■□□□□■■▒■■□□□□□▒▒■■□□□□□▒■■□□□□■■
+■□□□□■■▒■■□□□□□▒▒■■□□□□□▒■■□□□□■■
+■■■■■■■▒■■■■■■■▒▒■■■■■■■▒■■□□□□■■
+■■■■■■■▒■■■■■■■▒▒■■■■■■■▒■■□□□□■■
+□□□□□■■▒□□□□□■■▒▒□□□□□■■▒■■□□□□■■
+□□□□□■■▒□□□□□■■▒▒□□□□□■■▒■■□□□□■■
+□□□□□■■▒□□□□□■■▒▒□□□□□■■▒■■□□□□■■
+□□□□□■■▒□□□□□■■▒▒□□□□□■■▒■■□□□□■■
+□□□□□■■▒□□□□□■■▒▒□□□□□■■▒■■□□□□■■
+□□□□□■■▒□□□□□■■▒▒□□□□□■■▒■■□□□□■■
+□□□□□■■▒□□□□□■■▒▒□□□□□■■▒■■□□□□■■
+■■■■■■■▒■■■■■■■▒▒■■■■■■■▒■■■■■■■■
+■■■■■■■▒■■■■■■■▒▒■■■■■■■▒■■■■■■■■
 '''
 
 # pyintall -> 상대경로를 통해 이미지 파일 가져오기 위한 함수
@@ -111,7 +111,6 @@ class ShowWe(QThread):
 class DocWriter(QWidget):
     def __init__(self):
         super().__init__()
-
         self.version = 1.0
         
         ##################################################
@@ -188,7 +187,7 @@ class DocWriter(QWidget):
                                     '''
         ##################################################
         ############# Log ################################
-        self.mark_naming = ['{@#mark', '@}']
+        self.mark_naming = ['{%mark', '%}']
         self.log_comment = """이곳에 작업 로그가 보여집니다."""
         self.mark_value_not_enough = '''모든 칸을 채워주세요'''
         self.no_mark_input = f'''하나 이상의 행이 입력되어야 합니다'''
@@ -559,7 +558,7 @@ class DocWriter(QWidget):
         imported_file = imported_file[0].replace("/", "\\")
         mark_dict = self.amc.import_mark(imported_file)
         
-        for w in self.groupbox.findChildren(QPushButton):
+        for w in self.groupbox.findChildren(QTextBrowser):
             w.deleteLater()
         for w in self.groupbox.findChildren(QLineEdit):
             w.deleteLater()
