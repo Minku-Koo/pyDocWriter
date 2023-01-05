@@ -7,7 +7,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import * 
 from PyQt5.QtGui import QIcon, QPixmap
 # from PyQt5 import QtCore
-from PyQt5.QtWidgets import QWidget, QApplication, QGridLayout, QLabel, QLineEdit #, QTextEdit
+from PyQt5.QtWidgets import QWidget, QApplication, QGridLayout, QLabel, QLineEdit 
 import os
 import time
 import webbrowser
@@ -74,44 +74,12 @@ class Worker(QThread):
         return 
 
 
-class ShowWe(QThread):
-    def __init__(self, parents):
-        super().__init__(parents)
-        self.parents = parents
-        self.__running = True
-        self.num = 0
-        
-        self.show_log = our_init_logo_view.split("\n")
-        
-    def run(self):
-        while self.__running:
-            if self.parents.init_run_flog:
-                time.sleep(0.03)
-                self.__show()
-            else:
-                self.stop()
-
-    def __show(self):
-        # self.parents.add_log(self.our_init_logo_view, 'black')
-        self.parents.add_log(self.show_log[self.num], 'black')
-        # print(self.show_log[self.num])
-        self.num += 1
-        if len(self.show_log) == self.num:
-            self.parents.init_run_flog = False
-        return 
-
-    def stop(self):
-        self.__running = False
-        self.parents.start_logo_view_over = True
-        self.quit()
-        return 
-
 
 
 class DocWriter(QWidget):
     def __init__(self):
         super().__init__()
-        self.version = 1.0
+        self.version = '1.0.2'
         
         ##################################################
         ############# Size Space #########################
@@ -159,7 +127,6 @@ class DocWriter(QWidget):
         self.help_link_url = "https://lndhub.samsung.com/lndhub/blog/techBlogDetail/AYULHBmkGmZgAcLt?type=Blog"
         
         self.scroll_flag = True
-        self.init_run_flog = True
         self.start_logo_view_over = False
 
         ##################################################
@@ -410,10 +377,7 @@ class DocWriter(QWidget):
 
         self.mark_vbox.addLayout(self.mark_box)
         self.mark_box.setAlignment(Qt.AlignTop)
-        # if header:
-        #     self.mark_vbox.setAlignment(Qt.AlignTop)
-        # else:
-        #     self.mark_vbox.setAlignment(Qt.AlignTop)
+        
 
         if not header:
             value_tp = (mark_line_num, mark_line_name, mark_line_value)
@@ -525,6 +489,8 @@ class DocWriter(QWidget):
         if self.start_logo_view_over:
             self.log_view.clear()
             self.start_logo_view_over = False
+            self.add_log(self.log_comment, 'black')
+            
 
         self.log_view.append(f'<span style=\"color:#{self.log_color[color]};\">{text}</span>')
         return 
@@ -579,8 +545,10 @@ class DocWriter(QWidget):
                                             )
         if buttonReply == QMessageBox.Cancel:
             return 
-        self.log_view.clear()
-        self.add_log(self.log_comment, 'black')
+
+        self.start_logo_view_over = False
+        self.__show_our_logo_dynamic()
+        
 
         for w in self.groupbox.findChildren(QTextBrowser):
             w.deleteLater()
@@ -592,13 +560,15 @@ class DocWriter(QWidget):
         for fname in self.ms_loaded_file_label.keys():
             for k in self.ms_loaded_file_label[fname]:
                 self.file_vbox.removeWidget(k)
-
+        
         self.mark_num = 0
         self.ms_loaded_file_label = {}
         self.ms_loaded_file_index = 0
         self.mark_obj_dict = {} 
         self.output_target_path = ''
         self.target_path_box.setText('')
+        
+        self.generate_mark()
         return 
 
     def file_work_result(self, filename, done = False):
@@ -640,16 +610,9 @@ class DocWriter(QWidget):
     def __show_our_logo_dynamic(self):
         self.log_view.clear()
 
-        # 1)
         for line in our_init_logo_view.split("\n"):
             self.add_log(line, 'black')
 
-
-        # 2)
-        # show_we = ShowWe(self)
-        # show_we.start()
-
-        self.init_run_flog = True
         self.start_logo_view_over = True
         return 
 
